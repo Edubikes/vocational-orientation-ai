@@ -74,7 +74,7 @@ export default function CheckoutPage() {
                 <div className="text-center mb-6">
                     <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase tracking-wide">Oferta Limitada</span>
                     <div className="flex items-end justify-center gap-2 mt-2">
-                        <span className="text-4xl font-bold text-gray-900">$49</span>
+                        <span className="text-4xl font-bold text-gray-900">$20</span>
                         <span className="text-xl text-gray-400 mb-1">.00 MXN</span>
                         <span className="text-lg text-gray-300 line-through mb-1 decoration-red-400 decoration-2">$299</span>
                     </div>

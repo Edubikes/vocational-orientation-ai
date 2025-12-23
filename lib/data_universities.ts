@@ -1,179 +1,157 @@
-import { CognitiveStyle } from "./questions";
-
-export interface University {
-    name: string;
-    type: 'Public' | 'Private';
-    location: string;
-    website: string;
-}
-
 export interface CareerDetail {
-    id: string; // matches career name in careers.ts generally, but specific here
+    id: string; // matches career name in careers.ts
     name: string;
     description: string;
+    relatedStyles: string[];
     universities: {
-        university: University;
-        plan: string[]; // List of subjects/materias
+        university: {
+            name: string;
+            type: 'Public' | 'Private';
+            location: string;
+            website: string;
+        };
+        plan: string[]; // List of key subjects
     }[];
-    relatedStyles: CognitiveStyle[];
 }
 
-// Data Investigation: A massive sampling of top Mexican universities and careers
 export const careerDetails: CareerDetail[] = [
     {
-        id: "Ingeniería en Sistemas Computacionales",
-        name: "Ingeniería en Sistemas Computacionales",
-        description: "Diseña y optimiza software y hardware. Ideal para mentes Analíticas y Sistémicas.",
-        relatedStyles: ["Analítico", "Sistémico", "Práctico"],
+        id: "Ingeniería en Inteligencia Artificial",
+        name: "Ingeniería en Inteligencia Artificial",
+        description: "Desarrollo de algoritmos inteligentes y aprendizaje automático.",
+        relatedStyles: ["Analítico", "Sistémico"],
         universities: [
             {
-                university: { name: "UNAM - Facultad de Ingeniería", type: "Public", location: "CDMX", website: "https://www.ingenieria.unam.mx" },
-                plan: ["Cálculo Diferencial", "Álgebra Lineal", "Estructura de Datos", "Programación Orientada a Objetos", "Sistemas Operativos", "Inteligencia Artificial", "Bases de Datos", "Redes de Computadoras", "Ingeniería de Software", "Ética Profesional"]
-            },
-            {
-                university: { name: "Tecnológico de Monterrey (ITESM)", type: "Private", location: "Nacional", website: "https://tec.mx" },
-                plan: ["Pensamiento Computacional", "Modelación Matemática", "Desarrollo de Software", "Ciberseguridad", "Arquitectura de Computadoras", "Internet de las Cosas", "Análisis de Algoritmos", "Innovación Tecnológica"]
+                university: { name: "Tec de Monterrey", type: "Private", location: "Monterrey / CDMX", website: "https://tec.mx" },
+                plan: ["Matemáticas Discretas", "Redes Neuronales", "Visión Computacional", "Ética en IA"]
             },
             {
                 university: { name: "IPN - ESCOM", type: "Public", location: "CDMX", website: "https://www.escom.ipn.mx" },
-                plan: ["Matemáticas Discretas", "Circuitos Lógicos", "Teoría Computacional", "Compiladores", "Sistemas Distribuidos", "Minería de Datos", "Liderazgo y Emprendimiento"]
-            }
-        ]
-    },
-    {
-        id: "Psicología Clínica",
-        name: "Licenciatura en Psicología",
-        description: "Estudio del comportamiento humano y procesos mentales. Ideal para mentes Emocionales y Reflexivas.",
-        relatedStyles: ["Emocional", "Reflexivo", "Colaborativo"],
-        universities: [
-            {
-                university: { name: "UNAM - Facultad de Psicología", type: "Public", location: "CDMX", website: "https://www.psicologia.unam.mx" },
-                plan: ["Neurobiología", "Teoría Psicoanalítica", "Psicología Social", "Psicometría", "Entrevista Clínica", "Psicopatología", "Desarrollo Humano", "Intervención en Crisis"]
+                plan: ["Algoritmos Genéticos", "Sistemas Expertos", "Procesamiento de Lenguaje Natural", "Robótica"]
             },
             {
-                university: { name: "Universidad Iberoamericana", type: "Private", location: "CDMX", website: "https://ibero.mx" },
-                plan: ["Epistemología de la Psicología", "Investigación Cualitativa", "Neuropsicología", "Psicología Educativa", "Psicología Organizacional", "Prácticas Supervisadas"]
+                university: { name: "UNAM - Facultad de Ingeniería", type: "Public", location: "CDMX", website: "https://www.ingenieria.unam.mx" },
+                plan: ["Ingeniería de Datos", "Aprendizaje Profundo", "Probabilidad Avanzada", "Sistemas Cognitivos"]
             }
         ]
     },
     {
-        id: "Diseño Gráfico",
-        name: "Licenciatura en Diseño y Comunicación Visual",
-        description: "Comunicación visual a través de imágenes y texto. Ideal para mentes Creativas y Detallistas.",
-        relatedStyles: ["Creativo", "Detallista", "Conceptual"],
+        id: "Ciberseguridad",
+        name: "Ciberseguridad",
+        description: "Protección de infraestructura digital.",
+        relatedStyles: ["Analítico", "Detallista"],
         universities: [
             {
-                university: { name: "UNAM - FAD", type: "Public", location: "CDMX", website: "https://www.fad.unam.mx" },
-                plan: ["Fundamentos del Diseño", "Geometría", "Tipografía", "Fotografía", "Semiótica", "Diseño Editorial", "Ilustración", "Medios Audiovisuales"]
+                university: { name: "Universidad Anáhuac", type: "Private", location: "CDMX", website: "https://www.anahuac.mx" },
+                plan: ["Criptografía", "Hacking Ético", "Forense Digital", "Seguridad en Nube"]
             },
             {
-                university: { name: "Universidad Anáhuac", type: "Private", location: "Nacional", website: "https://www.anahuac.mx" },
-                plan: ["Historia del Arte", "Dibujo", "Branding", "Diseño Web", "Animación Digital", "Mercadotecnia", "Gestión de Proyectos de Diseño"]
+                university: { name: "Tec de Monterrey", type: "Private", location: "Nacional", website: "https://tec.mx" },
+                plan: ["Seguridad de Redes", "Gestión de Riesgos", "Blockchain", "Legislación Informática"]
             }
         ]
     },
     {
-        id: "Derecho",
-        name: "Licenciatura en Derecho",
-        description: "Defensa de la justicia y aplicación de leyes. Ideal para mentes Críticas y Analíticas.",
-        relatedStyles: ["Crítico", "Analítico", "Reflexivo"],
+        id: "Neurocirugía",
+        name: "Neurocirugía",
+        description: "Especialidad médica enfocada en el sistema nervioso.",
+        relatedStyles: ["Detallista", "Práctico"],
         universities: [
             {
-                university: { name: "Escuela Libre de Derecho", type: "Private", location: "CDMX", website: "https://www.eld.edu.mx" },
-                plan: ["Derecho Romano", "Teoría del Estado", "Derecho Civil", "Derecho Penal", "Derecho Constitucional", "Derecho Mercantil", "Filosofía del Derecho"]
+                university: { name: "UNAM - Fac. Medicina", type: "Public", location: "CDMX", website: "https://medicina.unam.mx" },
+                plan: ["Neuroanatomía", "Microcirugía", "Neurología Clínica", "Cuidados Intensivos"]
             },
             {
-                university: { name: "UNAM - Facultad de Derecho", type: "Public", location: "CDMX", website: "https://www.derecho.unam.mx" },
-                plan: ["Sociología Jurídica", "Derechos Humanos", "Derecho Administrativo", "Derecho Laboral", "Derecho Internacional", "Amparo", "Criminología"]
-            }
-        ]
-    },
-    {
-        id: "Arquitectura",
-        name: "Arquitectura",
-        description: "Arte y técnica de proyectar y diseñar edificios. Ideal para mentes Abstractas y Prácticas.",
-        relatedStyles: ["Abstracto", "Práctico", "Creativo"],
-        universities: [
-            {
-                university: { name: "UNAM - Facultad de Arquitectura", type: "Public", location: "CDMX", website: "https://arquitectura.unam.mx" },
-                plan: ["Taller de Proyectos", "Geometría Descriptiva", "Sistemas Estructurales", "Historia de la Arquitectura", "Instalaciones", "Urbanismo", "Costos y Presupuestos"]
+                university: { name: "Tec de Monterrey - EMIS", type: "Private", location: "Monterrey", website: "https://tec.mx/salud" },
+                plan: ["Neuroimagenología", "Cirugía de Columna", "Neurofisiología", "Investigación Clínica"]
             },
             {
-                university: { name: "ITESO", type: "Private", location: "Guadalajara", website: "https://www.iteso.mx" },
-                plan: ["Diseño Asistido por Computadora", "Teoría de la Arquitectura", "Sustentabilidad", "Patrimonio Edificado", "Administración de Obra", "Paisajismo"]
+                university: { name: "Universidad La Salle", type: "Private", location: "CDMX", website: "https://lasalle.mx" },
+                plan: ["Bioética Médica", "Patología del SNC", "Técnicas Quirúrgicas", "Farmacología Avanzada"]
             }
         ]
     },
     {
-        id: "Medicina",
-        name: "Médico Cirujano",
-        description: "Diagnóstico y tratamiento de enfermedades. Ideal para mentes Prácticas y Sistémicas.",
-        relatedStyles: ["Práctico", "Sistémico", "Analítico", "Colaborativo"],
+        id: "Dirección de Cine",
+        name: "Dirección de Cine",
+        description: "Liderazgo creativo en producciones audiovisuales.",
+        relatedStyles: ["Creativo", "Conceptual"],
         universities: [
             {
-                university: { name: "UNAM - Facultad de Medicina", type: "Public", location: "CDMX", website: "https://www.facmed.unam.mx" },
-                plan: ["Anatomía", "Biología Celular", "Fisiología", "Farmacología", "Inmunología", "Salud Pública", "Cirugía", "Medicina Interna", "Pediatría", "Ginecología"]
+                university: { name: "Centro de Capacitación Cinematográfica (CCC)", type: "Public", location: "CDMX", website: "https://elccc.com.mx" },
+                plan: ["Guion Cinematográfico", "Dirección de Actores", "Montaje y Edición", "Lenguaje Visual"]
             },
             {
-                university: { name: "Tec de Monterrey - Escuela de Medicina", type: "Private", location: "Monterrey/CDMX", website: "https://tec.mx/es/salud" },
-                plan: ["Bases Biológicas", "Bioética", "Gestión en Salud", "Investigación Clínica", "Genética", "Nutrición", "Urgencias", "Cardiología"]
-            }
-        ]
-    },
-    {
-        id: "Administracion",
-        name: "Administración de Empresas",
-        description: "Gestión eficiente de recursos y organizaciones. Ideal para mentes Colaborativas y Prácticas.",
-        relatedStyles: ["Colaborativo", "Práctico", "Sistémico"],
-        universities: [
-            {
-                university: { name: "ITAM", type: "Private", location: "CDMX", website: "https://www.itam.mx" },
-                plan: ["Contabilidad Financiera", "Matemáticas Financieras", "Microeconomía", "Derecho Corporativo", "Mercadotecnia", "Recursos Humanos", "Estrategia Empresarial"]
+                university: { name: "ENAC (antes CUEC) - UNAM", type: "Public", location: "CDMX", website: "https://www.enac.unam.mx" },
+                plan: ["Realización Documental", "Realización Ficción", "Fotografía", "Producción Ejecutiva"]
             },
             {
-                university: { name: "UNAM - FCA", type: "Public", location: "CDMX", website: "https://www.fca.unam.mx" },
-                plan: ["Administración Básica", "Informática", "Estadística", "Costos", "Finanzas", "Operaciones", "Auditoría"]
+                university: { name: "CENTRO", type: "Private", location: "CDMX", website: "https://centro.edu.mx" },
+                plan: ["Cine Digital", "Nuevas Narrativas", "Postproducción", "Dirección de Arte"]
             }
         ]
     },
     {
-        id: "Filosofia",
-        name: "Licenciatura en Filosofía",
-        description: "Análisis profundo de la existencia y el pensamiento. Ideal para mentes Reflexivas y Abstractas.",
-        relatedStyles: ["Reflexivo", "Abstracto", "Crítico"],
+        id: "Capital de Riesgo (VC)",
+        name: "Capital de Riesgo (VC)",
+        description: "Finanzas aplicadas a startups y negocios emergentes.",
+        relatedStyles: ["Intuitivo", "Analítico"],
         universities: [
             {
-                university: { name: "UNAM - FFyL", type: "Public", location: "CDMX", website: "https://www.filos.unam.mx" },
-                plan: ["Lógica", "Ética", "Estética", "Filosofía Antigua", "Filosofía Moderna", "Metafísica", "Filosofía de la Ciencia", "Filosofía Política"]
+                university: { name: "ITAM", type: "Private", location: "CDMX", website: "https://ipade.mx" },
+                plan: ["Valuación de Empresas", "Finanzas Corporativas", "Estrategia de Negocios", "Economía Global"]
             },
             {
-                university: { name: "Universidad Panamericana", type: "Private", location: "CDMX", website: "https://www.up.edu.mx" },
-                plan: ["Antropología Filosófica", "Teodicea", "Filosofía del Lenguaje", "Bioética", "Filosofía de la Cultura", "Seminarios de Investigación"]
-            }
-        ]
-    },
-    // Adding more to cover specific styles heavily
-    {
-        id: "Biologia",
-        name: "Biología",
-        description: "Estudio de la vida y organismos. Ideal para mentes Detallistas y Sistémicas.",
-        relatedStyles: ["Detallista", "Sistémico", "Analítico"],
-        universities: [
-            {
-                university: { name: "UAM Xochimilco", type: "Public", location: "CDMX", website: "https://www.xoc.uam.mx" },
-                plan: ["Química Orgánica", "Biología Molecular", "Ecología", "Genética", "Evolución", "Botánica", "Zoología", "Biogeografía"]
+                university: { name: "IPADE Business School", type: "Private", location: "CDMX / MTY", website: "https://ipade.mx" },
+                plan: ["Venture Capital", "Private Equity", "Alta Dirección", "Emprendimiento"]
             }
         ]
     },
     {
-        id: "Mercadotecnia",
-        name: "Mercadotecnia",
-        description: "Estrategias de mercado y consumidor. Ideal para mentes Intuitivas y Creativas.",
-        relatedStyles: ["Intuitivo", "Creativo", "Colaborativo"],
+        id: "Diseño UX/UI",
+        name: "Diseño UX/UI",
+        description: "Experiencia de usuario.",
+        relatedStyles: ["Sistémico", "Emocional"],
         universities: [
             {
-                university: { name: "CECC", type: "Private", location: "CDMX", website: "https://cecc.edu.mx" },
-                plan: ["Comportamiento del Consumidor", "Investigación de Mercados", "Publicidad", "Branding", "Marketing Digital", "Relaciones Públicas"]
+                university: { name: "UAM Azcapotzalco", type: "Public", location: "CDMX", website: "https://www.azc.uam.mx" },
+                plan: ["Diseño de Comunicación Gráfica", "Psicología del Usuario", "Tipografía", "Tecnología Web"]
+            },
+            {
+                university: { name: "CENTRO", type: "Private", location: "CDMX", website: "https://centro.edu.mx" },
+                plan: ["Diseño de Interacción", "Prototipado", "Investigación de Usuarios", "Diseño Visual"]
+            }
+        ]
+    },
+    {
+        id: "Arquitectura Sustentable",
+        name: "Arquitectura Sustentable",
+        description: "Diseño ecológico.",
+        relatedStyles: ["Creativo", "Práctico"],
+        universities: [
+            {
+                university: { name: "UNAM - Fac. Arquitectura", type: "Public", location: "CDMX", website: "https://arquitectura.unam.mx" },
+                plan: ["Bioclimática", "Urbanismo", "Materiales Sostenibles", "Taller de Proyectos"]
+            },
+            {
+                university: { name: "ITESO", type: "Private", location: "Guadalajara", website: "https://iteso.mx" },
+                plan: ["Habitat y Desarrollo", "Construcción Ecológica", "Paisajismo", "Gestión Urbana"]
+            }
+        ]
+    },
+    {
+        id: "Derecho Penal",
+        name: "Derecho Penal",
+        description: "Justicia criminal.",
+        relatedStyles: ["Crítico", "Analítico"],
+        universities: [
+            {
+                university: { name: "Escuela Libre de Derecho", type: "Private", location: "CDMX", website: "https://eld.edu.mx" },
+                plan: ["Teoría del Delito", "Derecho Procesal Penal", "Criminología", "Derechos Humanos"]
+            },
+            {
+                university: { name: "UNAM - Fac. Derecho", type: "Public", location: "CDMX", website: "https://derecho.unam.mx" },
+                plan: ["Juicios Orales", "Derecho Constitucional", "Victimología", "Medicina Forense"]
             }
         ]
     }
