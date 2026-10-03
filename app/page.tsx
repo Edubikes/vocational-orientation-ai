@@ -3,7 +3,8 @@ import BrandLogo from '@/components/BrandLogo';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { LandingMotion, Reveal, StickyCta } from '@/components/LandingMotion';
+import { LandingMotion, Reveal } from '@/components/LandingMotion';
+import LazyStickyCta from '@/components/LazyStickyCta';
 import { CircleMark, PeopleGrid, Underline } from '@/components/Annotations';
 import SiteFooter from '@/components/SiteFooter';
 import { careers } from '@/lib/careers';
@@ -153,7 +154,7 @@ export default function Home() {
               <Image
                 src={filaImg}
                 alt="Fila larga de aspirantes con folders y celulares esperando un examen de admisión."
-                quality={50}
+                quality={45}
                 sizes="(max-width: 768px) 100vw, 1200px"
                 placeholder="blur"
                 className="h-full w-full object-cover object-[50%_55%]"
@@ -354,7 +355,7 @@ export default function Home() {
 
         <SiteFooter />
       </div>
-      <StickyCta targetId="hero-cta" href="/test" label={CTA} />
+      <LazyStickyCta targetId="hero-cta" href="/test" label={CTA} />
     </LandingMotion>
   );
 }

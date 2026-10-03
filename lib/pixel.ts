@@ -21,10 +21,25 @@ function fbq(): Fbq | null {
   return typeof fn === 'function' ? fn : null;
 }
 
+/**
+ * El snippet base carga con strategy="lazyOnload": los eventos que ocurran
+ * antes se encolan en window.__fbqQ y el snippet los reenvía tras el init.
+ */
+function send(...args: unknown[]) {
+  if (!PIXEL_ID || typeof window === 'undefined') return;
+  const fn = fbq();
+  if (fn) {
+    fn(...args);
+    return;
+  }
+  const w = window as unknown as { __fbqQ?: unknown[][] };
+  (w.__fbqQ ??= []).push(args);
+}
+
 export function track(event: 'PageView' | 'ViewContent' | 'InitiateCheckout' | 'Lead', params?: Record<string, unknown>) {
-  fbq()?.('track', event, params);
+  send('track', event, params);
 }
 
 export function trackCustom(event: string, params?: Record<string, unknown>) {
-  fbq()?.('trackCustom', event, params);
+  send('trackCustom', event, params);
 }

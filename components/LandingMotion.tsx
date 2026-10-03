@@ -1,43 +1,62 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { MotionConfig, motion, useReducedMotion, type HTMLMotionProps } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 /**
- * Piezas cliente de la landing.
- * - Entradas: SOLO opacidad, ≤0.3 s, sin layout ni springs.
- * - prefers-reduced-motion: el contenido aparece sin animar.
+ * Piezas cliente de la landing — sin framer-motion (≈50 KB gz menos en la home).
+ * - Entradas: SOLO opacidad, ≤0.3 s, con transición CSS + IntersectionObserver.
+ * - prefers-reduced-motion: el contenido aparece sin animar (motion-reduce:).
  * - CTA fijo en móvil: aparece cuando el CTA del hero sale por arriba del
  *   viewport (IntersectionObserver, sin listeners de scroll).
  */
 
-const EASE = [0.22, 0.61, 0.36, 1] as const;
-
+/** Se conserva por compatibilidad: ya no necesita contexto de animación. */
 export function LandingMotion({ children }: { children: React.ReactNode }) {
-  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
+  return <>{children}</>;
 }
 
-interface RevealProps extends HTMLMotionProps<'div'> {
+interface RevealProps extends React.HTMLAttributes<HTMLDivElement> {
   delay?: number;
   onView?: boolean;
 }
 
-export function Reveal({ delay = 0, onView = false, children, ...rest }: RevealProps) {
-  const reduce = useReducedMotion();
-  const transition = reduce ? { duration: 0 } : { duration: 0.3, delay, ease: EASE, type: 'tween' as const };
+export function Reveal({ delay = 0, onView = false, className = '', style, children, ...rest }: RevealProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!onView || typeof IntersectionObserver === 'undefined') {
+      const id = requestAnimationFrame(() => setShown(true));
+      return () => cancelAnimationFrame(id);
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShown(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px -10% 0px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onView]);
+
   return (
-    <motion.div
-      initial={{ opacity: reduce ? 1 : 0 }}
-      {...(onView
-        ? { whileInView: { opacity: 1 }, viewport: { once: true, margin: '0px 0px -10% 0px' } }
-        : { animate: { opacity: 1 } })}
-      transition={transition}
+    <div
+      ref={ref}
+      className={`transition-opacity duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:opacity-100 motion-reduce:transition-none ${
+        shown ? 'opacity-100' : 'opacity-0'
+      } ${className}`}
+      style={{ ...style, transitionDelay: delay ? `${delay}s` : undefined }}
       {...rest}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
