@@ -6,7 +6,17 @@ export interface Career {
   salary: string;
   universities: string;
   weights: Record<CognitiveStyle, number>;
+  /** Fuente del rango salarial. Sin fuente = rango de referencia interno. */
+  salarySource?: string;
+  /**
+   * Carrera de alta concentración de matrícula (IMCO, Compara Carreras 2025).
+   * `share` = % del total de personas con carrera en México que la estudiaron.
+   */
+  saturation?: { share: string; source: string };
 }
+
+/** Etiqueta única para cualquier rango salarial mostrado al usuario. */
+export const SALARY_LABEL = 'Rango salarial de referencia (MXN/mes)';
 
 export const careers: Career[] = [
   // --- TECH & ENGINEERING ---
@@ -122,6 +132,54 @@ export const careers: Career[] = [
     salary: "$40,000 - $100,000",
     universities: "Escuela de Aviación México",
     weights: { 'Práctico': 3, 'Sistémico': 3, 'Detallista': 3, 'Analítico': 2, 'Emocional': 1, 'Colaborativo': 1, 'Crítico': 1, 'Intuitivo': 1, 'Conceptual': 0, 'Abstracto': 0, 'Reflexivo': 0, 'Creativo': 0 }
+  },
+
+  // --- CARRERAS DE ALTA SATURACIÓN (las 5 más estudiadas desde 2005, IMCO) ---
+  // Rango salarial = percentil 25 a percentil 75 de quienes la estudiaron,
+  // según IMCO Compara Carreras 2025 (datos ENOE, INEGI).
+  {
+    name: "Licenciatura en Derecho",
+    description: "Asesoría, litigio y negociación en materia civil, mercantil, laboral y pública.",
+    salary: "$12,950 - $27,358",
+    universities: "UNAM, Escuela Libre de Derecho, ITAM",
+    weights: { 'Crítico': 3, 'Reflexivo': 2, 'Analítico': 2, 'Conceptual': 2, 'Colaborativo': 2, 'Detallista': 2, 'Emocional': 1, 'Práctico': 1, 'Sistémico': 1, 'Abstracto': 1, 'Intuitivo': 1, 'Creativo': 1 },
+    salarySource: "IMCO Compara Carreras 2025 · https://comparacarreras.imco.org.mx/derecho/",
+    saturation: { share: "8.7%", source: "https://comparacarreras.imco.org.mx/derecho/" }
+  },
+  {
+    name: "Administración de Empresas",
+    description: "Dirección de operaciones, finanzas y personas dentro de una organización.",
+    salary: "$13,194 - $26,386",
+    universities: "UNAM, IPN, Tec de Monterrey",
+    weights: { 'Práctico': 3, 'Colaborativo': 3, 'Sistémico': 2, 'Analítico': 2, 'Intuitivo': 2, 'Detallista': 1, 'Crítico': 1, 'Emocional': 1, 'Conceptual': 1, 'Creativo': 1, 'Reflexivo': 0, 'Abstracto': 0 },
+    salarySource: "IMCO Compara Carreras 2025 · https://comparacarreras.imco.org.mx/administraci%C3%B3n_de_empresas/",
+    saturation: { share: "8.0%", source: "https://comparacarreras.imco.org.mx/administraci%C3%B3n_de_empresas/" }
+  },
+  {
+    name: "Contaduría Pública",
+    description: "Registro, auditoría y fiscalización de la información financiera.",
+    salary: "$12,914 - $25,901",
+    universities: "UNAM, IPN, ITAM",
+    weights: { 'Detallista': 3, 'Analítico': 3, 'Práctico': 2, 'Sistémico': 2, 'Crítico': 2, 'Colaborativo': 1, 'Reflexivo': 1, 'Conceptual': 0, 'Abstracto': 0, 'Creativo': 0, 'Intuitivo': 0, 'Emocional': 0 },
+    salarySource: "IMCO Compara Carreras 2025 · https://comparacarreras.imco.org.mx/contabilidad_y_fiscalizaci%C3%B3n/",
+    saturation: { share: "7.7%", source: "https://comparacarreras.imco.org.mx/contabilidad_y_fiscalizaci%C3%B3n/" }
+  },
+  {
+    name: "Psicología",
+    description: "Evaluación e intervención en conducta, aprendizaje y bienestar de las personas.",
+    salary: "$11,878 - $22,145",
+    universities: "UNAM, UAM, Ibero",
+    weights: { 'Emocional': 3, 'Reflexivo': 3, 'Colaborativo': 2, 'Intuitivo': 2, 'Analítico': 2, 'Conceptual': 1, 'Crítico': 1, 'Sistémico': 1, 'Abstracto': 1, 'Creativo': 1, 'Detallista': 1, 'Práctico': 1 },
+    salarySource: "IMCO Compara Carreras 2025 · https://comparacarreras.imco.org.mx/psicolog%C3%ADa/",
+    saturation: { share: "4.2%", source: "https://comparacarreras.imco.org.mx/psicolog%C3%ADa/" }
+  },
+  {
+    name: "Ingeniería Industrial",
+    description: "Diseño y mejora de procesos productivos, logística y calidad.",
+    salary: "$14,432 - $31,291",
+    universities: "IPN, UNAM, Tec de Monterrey",
+    weights: { 'Sistémico': 3, 'Práctico': 3, 'Analítico': 2, 'Detallista': 2, 'Colaborativo': 2, 'Crítico': 1, 'Conceptual': 1, 'Creativo': 1, 'Abstracto': 1, 'Intuitivo': 0, 'Emocional': 0, 'Reflexivo': 0 },
+    salarySource: "IMCO Compara Carreras 2025 · https://comparacarreras.imco.org.mx/ingenier%C3%ADa_industrial/",
+    saturation: { share: "4.3%", source: "https://comparacarreras.imco.org.mx/ingenier%C3%ADa_industrial/" }
   }
-  // (Ideally we would have 100+ but this diverse set covers all archetypes well)
 ];

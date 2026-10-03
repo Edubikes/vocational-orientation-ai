@@ -1,33 +1,45 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google"; // Corrected font variable names to match what typically works or is used
-import "./globals.css";
+import type { Metadata, Viewport } from 'next';
+import { Inter, Newsreader } from 'next/font/google';
+import MetaPixel from '@/components/MetaPixel';
+import { careers } from '@/lib/careers';
+import './globals.css';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const inter = Inter({ variable: '--font-inter', subsets: ['latin'], display: 'swap' });
+const newsreader = Newsreader({
+  variable: '--font-newsreader',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const SITE_URL = 'https://descifratufuturo.com';
 
 export const metadata: Metadata = {
-  title: "Test de Orientación Vocacional IA | Resultados Oficiales",
-  description: "Descubre tu carrera ideal y en qué universidad estudiar con nuestro test vocacional basado en neurociencia e IA. Resultados precisos en 10 minutos.",
+  metadataBase: new URL(SITE_URL),
+  title: 'Descifra Tu Futuro | Elige carrera con datos',
+  description: `60 preguntas, 12 dimensiones de pensamiento y ${careers.length} rutas profesionales. Tu arquetipo gratis; el reporte completo de 7 páginas por $199 MXN.`,
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: 'Alguien en tu salón ya sabe qué va a estudiar.',
+    description: `60 preguntas · 12 dimensiones · ${careers.length} rutas profesionales. Tu arquetipo es gratis.`,
+    locale: 'es_MX',
+    type: 'website',
+    images: [{ url: '/og.jpg', width: 1200, height: 630, alt: 'Descifra Tu Futuro' }],
+  },
+  twitter: { card: 'summary_large_image', images: ['/og.jpg'] },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: '#f3f0e8',
+  colorScheme: 'light',
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="es-MX">
+      <body className={`${inter.variable} ${newsreader.variable} antialiased`}>
         {children}
+        <MetaPixel />
       </body>
     </html>
   );

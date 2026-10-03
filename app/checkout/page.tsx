@@ -1,109 +1,377 @@
 'use client';
 
-import { motion } from "framer-motion";
-import { Check, Lock, Sparkles } from "lucide-react";
-import { useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import BrandLogo from '@/components/BrandLogo';
+import Link from 'next/link';
+import { AlertTriangle, ArrowRight, Loader2, Lock } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { analyze, type Answers } from '@/lib/engine';
+import { buildShareCheckoutLink, checkoutAndRedirect, isFirebaseConfigured, loadAnswers, loadName } from '@/lib/lead';
+import { PRODUCT, priceFor, type PriceTier } from '@/lib/config';
+import { careers } from '@/lib/careers';
+import { track, trackCustom } from '@/lib/pixel';
+import ResultTeaser from '@/components/ResultTeaser';
 
-// Make sure to call `loadStripe` outside of a component’s render to avoid
-// recreating the `Stripe` object on every render.
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+/**
+ * ESTADO 4 — Teaser + muro de pago (v3).
+ *
+ * Dos acciones al pagar, en orden estricto (ver lib/lead.ts):
+ *   1. Persistir respuestas + correo + nombre + análisis en Firebase.
+ *   2. Redirigir al checkout de Shopify con lead_id (y nombre) adjuntos.
+ *
+ * "Pídeselo a mamá o papá": guarda el lead con el correo del estudiante y abre
+ * WhatsApp con un enlace de pago que NO lleva ese correo; el backend entrega
+ * el PDF al correo del lead, así que llega al estudiante aunque pague otro.
+ */
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+const INCLUDED = [
+  `Tus 8 carreras más afines de ${careers.length} analizadas, con su % de afinidad`,
+  'Perfil completo de las 12 dimensiones, medidas contra su propio máximo',
+  'Universidades en México y qué se estudia en cada carrera',
+  'Rango salarial de referencia por profesión (IMCO cuando hay dato)',
+  'PDF de 7 páginas a tu correo en cuanto se confirma el pago',
+] as const;
+
+const NO_REFUNDS =
+  'Debido a la naturaleza automatizada y la entrega instantánea de los recursos de cómputo para este reporte, todas las ventas son finales.';
+
+type Status = 'idle' | 'saving' | 'sharing' | 'error';
+
+/*
+ * Las respuestas viven en localStorage (las escribe /test al terminar).
+ * useSyncExternalStore las lee sin setState dentro de un efecto y con un
+ * snapshot de servidor nulo, así la página prerenderizada no se desajusta.
+ */
+function subscribeStorage(onChange: () => void) {
+  window.addEventListener('storage', onChange);
+  return () => window.removeEventListener('storage', onChange);
+}
+const readAnswersSnapshot = () => JSON.stringify(loadAnswers());
+const serverAnswersSnapshot = () => null;
+const readNameSnapshot = () => loadName();
+const serverNameSnapshot = () => '';
 
 export default function CheckoutPage() {
-    const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const snapshot = useSyncExternalStore(subscribeStorage, readAnswersSnapshot, serverAnswersSnapshot);
+  const nombre = useSyncExternalStore(subscribeStorage, readNameSnapshot, serverNameSnapshot);
+  const answers = useMemo<Answers | null>(() => (snapshot ? (JSON.parse(snapshot) as Answers | null) : null), [snapshot]);
+  const hasAnswers = !!answers && Object.keys(answers).length > 0;
+  const [email, setEmail] = useState('');
+  const [touched, setTouched] = useState(false);
+  const [status, setStatus] = useState<Status>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [tier, setTier] = useState<PriceTier>('regular');
+  const price = priceFor(tier);
+  const firedView = useRef(false);
 
-    const handleCheckout = async () => {
-        setLoading(true);
+  useEffect(() => {
+    if (snapshot !== null && !hasAnswers) router.replace('/test');
+  }, [snapshot, hasAnswers, router]);
 
-        // In a real scenario, we call our API to create a checkout session
-        try {
-            const response = await fetch('/api/checkout', {
-                method: 'POST',
-            });
+  const analysis = useMemo(() => (hasAnswers && answers ? analyze(answers) : null), [answers, hasAnswers]);
 
-            const { sessionId, url } = await response.json();
+  useEffect(() => {
+    // Vista del muro de pago (custom). InitiateCheckout se dispara al pulsar
+    // pagar/compartir, con el precio elegido (199 o 99).
+    if (analysis && !firedView.current) {
+      firedView.current = true;
+      trackCustom('PaywallView', { content_name: PRODUCT.name });
+    }
+  }, [analysis]);
 
-            if (url) {
-                window.location.href = url;
-            } else {
-                console.error("No session URL returned");
-                // Fallback for demo if no stripe key:
-                alert("Stripe keys missing. Redirecting to demo results.");
-                window.location.href = "/results";
-            }
+  const isEmailValid = EMAIL_PATTERN.test(email.trim());
+  const isBusy = status === 'saving' || status === 'sharing';
+  const showEmailError = touched && !isEmailValid;
 
-        } catch (error) {
-            console.error(error);
-            setLoading(false);
-            // Fallback for demo
-            window.location.href = "/results";
-        }
-    };
+  const handleUnlock = async () => {
+    setTouched(true);
+    if (!isEmailValid || isBusy) return;
+    setStatus('saving');
+    setErrorMessage(null);
+    track('Lead', { content_name: 'pago_directo' });
+    track('InitiateCheckout', { value: price.mxn, currency: 'MXN', content_name: PRODUCT.name, content_category: tier });
+    try {
+      await checkoutAndRedirect(email.trim(), nombre, tier);
+      // La pestaña ya va camino a Shopify: el botón sigue bloqueado.
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage(resolveErrorMessage(error));
+    }
+  };
 
+  const handleShare = async () => {
+    setTouched(true);
+    if (!isEmailValid || isBusy || !analysis) return;
+    setStatus('sharing');
+    setErrorMessage(null);
+    track('Lead', { content_name: 'pideselo_whatsapp' });
+    track('InitiateCheckout', { value: price.mxn, currency: 'MXN', content_name: PRODUCT.name, content_category: `${tier}_whatsapp` });
+    try {
+      const link = await buildShareCheckoutLink(email.trim(), nombre, tier);
+      const text =
+        `Hice un test de orientación vocacional (60 preguntas) y me salió "${analysis.archetype.name}". ` +
+        `El reporte completo trae mis 8 carreras más afines, universidades y rangos salariales de referencia. ` +
+        `Cuesta ${price.label}, pago único. ¿Me lo compras? Me llega a mi correo: ${link}`;
+      window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      setStatus('idle');
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage(resolveErrorMessage(error));
+    }
+  };
+
+  if (!analysis) {
     return (
-        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans flex items-center justify-center p-4">
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="max-w-md w-full bg-white border border-gray-100 rounded-3xl p-8 shadow-soft"
-            >
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Check className="w-8 h-8 text-[var(--primary)]" />
-                </div>
-
-                <h1 className="text-3xl font-bold text-center mb-2 text-gray-900">¡Test Completado!</h1>
-                <p className="text-center text-gray-500 mb-8">
-                    Tu perfil cerebral y vocacional ha sido calculado con éxito. Esto es lo que obtendrás:
-                </p>
-
-                <div className="space-y-4 mb-8">
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <Sparkles className="w-5 h-5 text-purple-500" />
-                        <span className="text-sm font-medium text-gray-700">Análisis detallado de personalidad</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <Sparkles className="w-5 h-5 text-blue-500" />
-                        <span className="text-sm font-medium text-gray-700">Top 10 Carreras + Universidades</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <Sparkles className="w-5 h-5 text-amber-500" />
-                        <span className="text-sm font-medium text-gray-700">Plan de estudios personalizado</span>
-                    </div>
-                </div>
-
-                <div className="text-center mb-6">
-                    <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase tracking-wide">Oferta Limitada</span>
-                    <div className="flex items-end justify-center gap-2 mt-2">
-                        <span className="text-4xl font-bold text-gray-900">$20</span>
-                        <span className="text-xl text-gray-400 mb-1">.00 MXN</span>
-                        <span className="text-lg text-gray-300 line-through mb-1 decoration-red-400 decoration-2">$299</span>
-                    </div>
-                </div>
-
-                <button
-                    onClick={handleCheckout}
-                    disabled={loading}
-                    className="w-full py-4 bg-[var(--primary)] text-white font-bold rounded-xl hover:shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-soft"
-                >
-                    {loading ? 'Procesando...' : (
-                        <>
-                            <Lock className="w-4 h-4" />
-                            DESBLOQUEAR MI FUTURO
-                        </>
-                    )}
-                </button>
-
-                <div className="mt-6 flex justify-center gap-6 pt-6 border-t border-gray-100 opacity-60 grayscale hover:grayscale-0 transition-all">
-                    <span className="flex flex-col items-center">
-                        <Lock className="w-4 h-4 mb-1" />
-                        <span className="text-[10px] font-bold">SSL SEGURO</span>
-                    </span>
-                    <span className="flex flex-col items-center">
-                        <Check className="w-4 h-4 mb-1" />
-                        <span className="text-[10px] font-bold">GARANTIZADO</span>
-                    </span>
-                </div>
-            </motion.div>
-        </div>
+      <div className="flex min-h-[100dvh] items-center justify-center bg-papel text-[15px] text-gris">
+        Recuperando tu perfil…
+      </div>
     );
+  }
+
+  return (
+    <div className="min-h-[100dvh] bg-papel text-tinta">
+      <header className="flex items-center justify-between border-b border-linea px-4 py-3 sm:px-8">
+        <BrandLogo />
+        <span className="text-[13px] text-gris">60 de 60 · perfil calculado</span>
+      </header>
+
+      <main className="mx-auto max-w-2xl px-4 pb-16 pt-8 sm:px-6 sm:pt-14">
+        <ResultTeaser analysis={analysis} nombre={nombre} />
+
+        {/* R3 · Portada del reporte (maqueta con tus datos) */}
+        <section className="mt-10">
+          <p className="text-[14px] font-medium text-gris">Tu reporte completo</p>
+          <div className="mt-3 flex gap-4">
+            <div className="relative aspect-[1/1.294] w-32 shrink-0 border border-linea bg-white p-3 shadow-[0_8px_24px_-12px_rgba(22,20,15,0.35)] sm:w-40">
+              <p className="text-[6px] font-semibold uppercase tracking-[0.2em] text-gris">Reporte algorítmico</p>
+              <p className="mt-3 font-serif text-[13px] font-semibold leading-tight sm:text-[15px]">{analysis.archetype.name}</p>
+              <p className="mt-2 text-[7px] uppercase tracking-[0.12em] text-gris">Sujeto</p>
+              <p className="truncate text-[9px] font-medium">{nombre || 'Tu nombre'}</p>
+              <div className="absolute inset-x-3 bottom-3 space-y-1" aria-hidden="true">
+                {[90, 72, 60, 44].map((w) => (
+                  <div key={w} className="h-1 bg-papel-2" style={{ width: `${w}%` }} />
+                ))}
+              </div>
+            </div>
+            <ul className="space-y-2 text-[15px] leading-snug">
+              {INCLUDED.map((item) => (
+                <li key={item} className="flex gap-2">
+                  <span className="mt-[7px] h-1.5 w-1.5 shrink-0 bg-rojo" aria-hidden="true" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* R4 · Oferta */}
+        <section className="mt-10 scroll-mt-4 border border-tinta bg-white/80 p-4 sm:p-6" id="pagar">
+          <div>
+            <h2 className="font-serif text-[1.5rem] font-semibold leading-tight">Desbloquea tu reporte</h2>
+            <p className="mt-1 whitespace-nowrap tabular-nums">
+              {tier === 'joven' && (
+                <s className="mr-2 text-[1rem] font-normal text-gris" aria-label={`Antes ${PRODUCT.priceLabel}`}>
+                  {PRODUCT.priceLabel}
+                </s>
+              )}
+              <span className="text-[1.5rem] font-semibold">{price.label}</span>
+            </p>
+          </div>
+          <p className="mt-1 text-[14px] text-gris">Pago único. Sin suscripción.</p>
+
+          <fieldset className="mt-5">
+            <legend className="text-[15px] font-medium">Elige tu precio</legend>
+            <div className="mt-2 grid gap-2">
+              {(
+                [
+                  ['joven', 'Tengo menos de 25 años', 'Precio joven', PRODUCT.youthPriceLabel],
+                  ['regular', 'Tengo 25 años o más', 'Precio regular', PRODUCT.priceLabel],
+                ] as const
+              ).map(([value, title, sub, label]) => {
+                const active = tier === value;
+                return (
+                  <label
+                    key={value}
+                    className={`flex min-h-14 cursor-pointer items-center gap-3 border px-4 py-3 transition-colors duration-100 ${
+                      active ? 'border-tinta bg-white' : 'border-linea bg-white/60'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="tarifa"
+                      value={value}
+                      checked={active}
+                      onChange={() => setTier(value)}
+                      disabled={isBusy}
+                      className="h-5 w-5 shrink-0 accent-[#1a6a43]"
+                    />
+                    <span className="flex-1">
+                      <span className="block text-[16px] font-semibold leading-tight">{title}</span>
+                      <span className="block text-[13px] text-gris">{sub}</span>
+                    </span>
+                    <span className="whitespace-nowrap text-right tabular-nums">
+                      {value === 'joven' && (
+                        <s className="mr-1.5 text-[13px] text-gris">{PRODUCT.priceLabel.replace(' MXN', '')}</s>
+                      )}
+                      <span className="text-[17px] font-semibold">{label.replace(' MXN', '')}</span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-[12px] leading-relaxed text-gris">
+              La edad es autodeclarada: al elegir el precio joven declaras que tienes menos de 25 años. El descuento
+              (código {PRODUCT.youthDiscountCode}) se aplica solo en el pago.
+            </p>
+          </fieldset>
+
+          <label htmlFor="email" className="mt-5 block text-[15px] font-medium">
+            Tu correo <span className="font-normal text-gris">(ahí llega el PDF)</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            required
+            value={email}
+            disabled={isBusy}
+            onChange={(event) => setEmail(event.target.value)}
+            onBlur={() => setTouched(true)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') handleUnlock();
+            }}
+            placeholder="tu@correo.com"
+            aria-invalid={showEmailError}
+            aria-describedby={showEmailError ? 'email-error' : undefined}
+            className={`mt-2 h-14 w-full border bg-white px-4 text-[17px] outline-none placeholder:text-gris-2 disabled:opacity-60 ${
+              showEmailError ? 'border-rojo' : 'border-linea focus:border-tinta'
+            }`}
+          />
+          {showEmailError && (
+            <p id="email-error" className="mt-2 text-[14px] text-rojo">
+              Escribe un correo válido: es el único canal por el que llega tu PDF.
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={handleUnlock}
+            disabled={isBusy}
+            className="mt-4 flex h-14 w-full items-center justify-between gap-3 bg-accion px-5 text-left text-[17px] font-semibold text-white transition-colors enabled:hover:bg-accion-2 disabled:cursor-wait disabled:opacity-70"
+          >
+            {status === 'saving' ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Preparando tu pago…
+              </span>
+            ) : (
+              <>
+                <span className="flex items-center gap-2">
+                  <Lock className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+                  Pagar {price.label}
+                </span>
+                <ArrowRight className="h-5 w-5" strokeWidth={2.25} />
+              </>
+            )}
+          </button>
+
+          <p className="mt-3 text-[13px] leading-relaxed text-tinta/80">{NO_REFUNDS}</p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-gris">
+            Si el PDF no te llega o hay una falla técnica, escríbenos a{' '}
+            <a href="mailto:contacto@descifratufuturo.com" className="underline underline-offset-2">contacto@descifratufuturo.com</a> y lo
+            corregimos o te lo reenviamos.
+          </p>
+
+          {status === 'error' && errorMessage && (
+            <div role="alert" className="mt-4 flex items-start gap-3 border border-rojo p-3 text-[14px] text-rojo">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
+          {/* Pídeselo a mamá o papá */}
+          <div className="mt-6 border-t border-linea pt-5">
+            <p className="text-[15px] font-medium">¿No tienes tarjeta?</p>
+            <p className="mt-1 text-[14px] leading-relaxed text-gris">
+              Mándale el enlace de pago a mamá o papá por WhatsApp. Cuando paguen, el PDF llega a tu correo.
+            </p>
+            <button
+              type="button"
+              onClick={handleShare}
+              disabled={isBusy}
+              className="mt-3 flex h-14 w-full items-center justify-center gap-2 border border-tinta bg-transparent px-5 text-[16px] font-semibold text-tinta transition-colors enabled:hover:bg-tinta enabled:hover:text-papel disabled:opacity-60"
+            >
+              {status === 'sharing' ? <Loader2 className="h-5 w-5 animate-spin" /> : null}
+              Pídeselo a mamá o papá
+            </button>
+          </div>
+
+          <p className="mt-5 text-[12px] leading-relaxed text-gris">
+            El pago lo procesa Shopify. Nosotros nunca vemos ni guardamos los datos de tu tarjeta. Consulta nuestro{' '}
+            <Link href="/aviso-de-privacidad" className="underline underline-offset-2">Aviso de Privacidad</Link>.
+          </p>
+        </section>
+
+        {process.env.NODE_ENV === 'development' && !isFirebaseConfigured() && (
+          <p className="mt-6 border border-linea p-4 text-xs leading-relaxed text-gris">
+            [dev] Firebase sin configurar. Sin eso el botón fallará a propósito, para no cobrar sin poder entregar.
+          </p>
+        )}
+      </main>
+      <PayStickyCta label={`Desbloquear · desde ${PRODUCT.youthPriceLabel}`} />
+    </div>
+  );
+}
+
+/** CTA fijo en móvil mientras la oferta (#pagar) sigue debajo del viewport. */
+function PayStickyCta({ label }: { label: string }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const target = document.getElementById('pagar');
+    if (!target || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(!entry.isIntersecting && entry.boundingClientRect.top > 0),
+      { threshold: 0 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div
+      className={`fixed inset-x-0 bottom-0 z-50 border-t border-linea bg-papel/90 px-4 pt-3 backdrop-blur-md transition-opacity duration-200 md:hidden ${
+        visible ? 'opacity-100' : 'pointer-events-none opacity-0'
+      }`}
+      style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+      aria-hidden={!visible}
+    >
+      <a
+        href="#pagar"
+        tabIndex={visible ? 0 : -1}
+        className="flex h-14 w-full items-center justify-between gap-3 bg-accion px-5 text-[17px] font-semibold text-white active:bg-accion-2"
+      >
+        {label}
+        <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
+      </a>
+    </div>
+  );
+}
+
+/** Traduce fallos técnicos a algo que el usuario pueda accionar. */
+function resolveErrorMessage(error: unknown): string {
+  const code = error instanceof Error ? error.message : '';
+
+  switch (code) {
+    case 'NO_ANSWERS':
+      return 'No encontramos tus respuestas. Vuelve a hacer el test — toma 8 minutos.';
+    case 'FIREBASE_NOT_CONFIGURED':
+      return 'El sistema de entrega no está disponible en este momento. No se te ha cobrado nada. Intenta de nuevo en unos minutos.';
+    case 'FIREBASE_TIMEOUT':
+      return 'Tu conexión está tardando demasiado. No se te ha cobrado nada — revisa tu red e intenta otra vez.';
+    default:
+      return 'No pudimos guardar tu perfil, así que detuvimos el pago. No se te ha cobrado nada. Intenta de nuevo.';
+  }
 }

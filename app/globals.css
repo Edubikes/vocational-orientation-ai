@@ -1,24 +1,164 @@
 @import "tailwindcss";
 
+/**
+ * TOKENS — "Brutalismo clínico" (test, checkpoints, procesamiento y muro de pago).
+ * Negro, blanco hueso, grises secos y un solo acento. Sin degradados, sin sombras,
+ * sin esquinas redondeadas. Generan utilidades: bg-ink, text-paper, border-rule, etc.
+ */
+@theme {
+  /* v3 · editorial-documental */
+  --color-papel: #f3f0e8;
+  --color-papel-2: #eae4d6;
+  --color-tinta: #16140f;
+  --color-gris: #615a4f;
+  --color-gris-2: #8f8778;
+  --color-linea: #d8d0bf;
+  --color-rojo: #c32f1c;
+  --color-rojo-2: #a42716;
+  /* Color de ACCIÓN: solo botones de avanzar/pagar. Rojo = anotación/dato/error. */
+  --color-accion: #1a6a43;
+  --color-accion-2: #145536;
+
+  /* v1/v2 (heredados) */
+  --color-ink: #0a0a0a;
+  --color-panel: #121212;
+  --color-rule: #2b2b2b;
+  --color-rule-strong: #4d4d4b;
+  --color-dust: #6b6b67;
+  --color-ash: #9a9a95;
+  --color-paper: #ecebe6;
+  --color-signal: #00ff66;
+}
+
+/**
+ * SISTEMA DE DISEÑO — "Autoridad Clínica"
+ * Fondo casi negro, texto gris niebla, un único acento verde terminal.
+ * Un solo acento: en una interfaz de un solo camino, cada color extra es una salida.
+ */
+
 :root {
-  --background: #fdfaf6; /* Creamy background from image */
-  --foreground: #1a1a1a;
-  --primary: #109f6e; /* Green button */
-  --secondary: #d946ef; /* Pink button accent */
-  --card: #ffffff;
-  --input-bg: #f3f4f6;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #09090b;        /* zinc-950 */
+  --surface: #121214;           /* tarjetas */
+  --surface-raised: #18181b;    /* zinc-900 */
+  --border: #27272a;            /* zinc-800 */
+  --border-strong: #3f3f46;     /* zinc-700 */
+
+  --foreground: #e4e4e7;        /* zinc-200 */
+  --muted: #a1a1aa;             /* gris niebla — zinc-400 */
+  --faint: #52525b;             /* zinc-600 */
+
+  --accent: #00e58a;            /* verde terminal */
+  --accent-dim: #00b36e;
+  --accent-glow: rgba(0, 229, 138, 0.14);
+
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-newsreader), Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html {
+  color-scheme: light;
+  background: #f3f0e8;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: #f3f0e8;
+  color: #16140f;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Utilities */
-.shadow-soft {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+/* Rejilla de instrumentación: sugiere medición, no decoración. */
+.grid-backdrop {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
+
+.accent-halo {
+  background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 68%);
+}
+
+/* --- Botón pulsante (Estado 1) ---------------------------------- */
+/* El halo escala y se desvanece; el botón no se mueve.             */
+/* Un botón que late invita; uno que salta molesta y pierde clics.  */
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);    opacity: 0.55; }
+  70%  { transform: scale(1.28); opacity: 0; }
+  100% { transform: scale(1.28); opacity: 0; }
+}
+
+.pulse-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  animation: pulse-ring 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+  z-index: -1;
+}
+
+/* --- Cursor de terminal (Estado 3) ------------------------------ */
+
+@keyframes caret-blink {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.caret {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1.05em;
+  margin-left: 0.15em;
+  background: var(--color-signal);
+  vertical-align: text-bottom;
+  animation: caret-blink 1s step-end infinite;
+}
+
+/* --- Barrido de escáner (Estado 3) ----------------------------- */
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scanline {
+  animation: scanline 2.2s linear infinite;
+}
+
+/* Accesibilidad: respetar a quien pide menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-ring::before,
+  .caret,
+  .scanline {
+    animation: none;
+  }
+  .caret { opacity: 1; }
+}
+
+/* Selección y foco coherentes con el acento. */
+::selection {
+  background: #c32f1c;
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid #16140f;
+  outline-offset: 2px;
+}
+
+/* Scrollbar discreta, consistente con el tema. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #f3f0e8; }
+::-webkit-scrollbar-thumb {
+  background: #d8d0bf;
+  border-radius: 0;
+  border: 2px solid #f3f0e8;
+}
+::-webkit-scrollbar-thumb:hover { background: #8f8778; }
