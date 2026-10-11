@@ -7,7 +7,7 @@ import { AlertTriangle, ArrowRight, Loader2, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { analyze, type Answers } from '@/lib/engine';
 import { buildShareCheckoutLink, checkoutAndRedirect, isFirebaseConfigured, loadAnswers, loadName } from '@/lib/lead';
-import { PRODUCT, priceFor, type PriceTier } from '@/lib/config';
+import { GUARANTEE_ENABLED, PRODUCT, priceFor, type PriceTier } from '@/lib/config';
 import { careers } from '@/lib/careers';
 import { track, trackCustom } from '@/lib/pixel';
 import ResultTeaser from '@/components/ResultTeaser';
@@ -33,6 +33,8 @@ const INCLUDED = [
   'Rango salarial de referencia por profesión (IMCO cuando hay dato)',
   'PDF de 7 páginas a tu correo en cuanto se confirma el pago',
 ] as const;
+
+const GUARANTEE = 'Si el reporte no te sirve, te devolvemos tu dinero en 7 días.';
 
 const NO_REFUNDS =
   'Debido a la naturaleza automatizada y la entrega instantánea de los recursos de cómputo para este reporte, todas las ventas son finales.';
@@ -63,9 +65,12 @@ export default function CheckoutPage() {
   const [touched, setTouched] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [tier, setTier] = useState<PriceTier>('regular');
+  const [tier, setTier] = useState<PriceTier>('joven');
   const price = priceFor(tier);
   const firedView = useRef(false);
+  const firedIntent = useRef(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const [askEmail, setAskEmail] = useState(false);
 
   useEffect(() => {
     if (snapshot !== null && !hasAnswers) router.replace('/test');
@@ -84,11 +89,32 @@ export default function CheckoutPage() {
 
   const isEmailValid = EMAIL_PATTERN.test(email.trim());
   const isBusy = status === 'saving' || status === 'sharing';
-  const showEmailError = touched && !isEmailValid;
+  const showEmailError = touched && !isEmailValid && email.length > 0;
+
+  /** Lleva al usuario al campo de correo con el mensaje de "¿a qué correo?". */
+  const askForEmail = () => {
+    setAskEmail(true);
+    const input = emailRef.current;
+    if (!input) return;
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    input.focus({ preventScroll: true });
+  };
 
   const handleUnlock = async () => {
+    if (isBusy) return;
     setTouched(true);
-    if (!isEmailValid || isBusy) return;
+    // Primer clic: señal de intención (no ensucia InitiateCheckout, que sigue abajo).
+    if (!firedIntent.current) {
+      firedIntent.current = true;
+      track('AddToCart', { value: price.mxn, currency: 'MXN' });
+      if (!isEmailValid) {
+        trackCustom('CheckoutIntent', { value: price.mxn, currency: 'MXN', content_category: tier });
+      }
+    }
+    if (!isEmailValid) {
+      askForEmail();
+      return;
+    }
     setStatus('saving');
     setErrorMessage(null);
     track('Lead', { content_name: 'pago_directo' });
@@ -103,8 +129,12 @@ export default function CheckoutPage() {
   };
 
   const handleShare = async () => {
+    if (isBusy || !analysis) return;
     setTouched(true);
-    if (!isEmailValid || isBusy || !analysis) return;
+    if (!isEmailValid) {
+      askForEmail();
+      return;
+    }
     setStatus('sharing');
     setErrorMessage(null);
     track('Lead', { content_name: 'pideselo_whatsapp' });
@@ -132,10 +162,10 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-papel text-tinta">
+    <div className="min-h-[100dvh] bg-papel pb-24 text-tinta md:pb-0">
       <header className="flex items-center justify-between border-b border-linea px-4 py-3 sm:px-8">
         <BrandLogo />
-        <span className="text-[13px] text-gris">60 de 60 · perfil calculado</span>
+        <span className="font-mono text-[12px] text-gris">60/60 · perfil calculado</span>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 pb-16 pt-8 sm:px-6 sm:pt-14">
@@ -145,7 +175,7 @@ export default function CheckoutPage() {
         <section className="mt-10">
           <p className="text-[14px] font-medium text-gris">Tu reporte completo</p>
           <div className="mt-3 flex gap-4">
-            <div className="relative aspect-[1/1.294] w-32 shrink-0 border border-linea bg-white p-3 shadow-[0_8px_24px_-12px_rgba(22,20,15,0.35)] sm:w-40">
+            <div className="relative aspect-[1/1.294] w-32 shrink-0 border border-linea bg-papel-2 p-3 sm:w-40">
               <p className="text-[6px] font-semibold uppercase tracking-[0.2em] text-gris">Reporte algorítmico</p>
               <p className="mt-3 font-serif text-[13px] font-semibold leading-tight sm:text-[15px]">{analysis.archetype.name}</p>
               <p className="mt-2 text-[7px] uppercase tracking-[0.12em] text-gris">Sujeto</p>
@@ -168,35 +198,25 @@ export default function CheckoutPage() {
         </section>
 
         {/* R4 · Oferta */}
-        <section className="mt-10 scroll-mt-4 border border-tinta bg-white/80 p-4 sm:p-6" id="pagar">
-          <div>
-            <h2 className="font-serif text-[1.5rem] font-semibold leading-tight">Desbloquea tu reporte</h2>
-            <p className="mt-1 whitespace-nowrap tabular-nums">
-              {tier === 'joven' && (
-                <s className="mr-2 text-[1rem] font-normal text-gris" aria-label={`Antes ${PRODUCT.priceLabel}`}>
-                  {PRODUCT.priceLabel}
-                </s>
-              )}
-              <span className="text-[1.5rem] font-semibold">{price.label}</span>
-            </p>
-          </div>
-          <p className="mt-1 text-[14px] text-gris">Pago único. Sin suscripción.</p>
+        <section className="mt-10 scroll-mt-4 border border-linea bg-white/[0.03] p-4 sm:p-6" id="pagar">
+          <h2 className="display text-[clamp(30px,6vw,44px)]">Desbloquea tu reporte</h2>
+          <p className="mt-2 text-[14px] text-gris">Pago único. Sin suscripción.</p>
 
           <fieldset className="mt-5">
             <legend className="text-[15px] font-medium">Elige tu precio</legend>
-            <div className="mt-2 grid gap-2">
+            <div className="mt-2 grid grid-cols-2 gap-2">
               {(
                 [
-                  ['joven', 'Tengo menos de 25 años', 'Precio joven', PRODUCT.youthPriceLabel],
-                  ['regular', 'Tengo 25 años o más', 'Precio regular', PRODUCT.priceLabel],
+                  ['joven', 'Menor de 25', PRODUCT.youthPriceLabel],
+                  ['regular', 'Normal', PRODUCT.priceLabel],
                 ] as const
-              ).map(([value, title, sub, label]) => {
+              ).map(([value, title, label]) => {
                 const active = tier === value;
                 return (
                   <label
                     key={value}
-                    className={`flex min-h-14 cursor-pointer items-center gap-3 border px-4 py-3 transition-colors duration-100 ${
-                      active ? 'border-tinta bg-white' : 'border-linea bg-white/60'
+                    className={`relative flex min-h-24 cursor-pointer flex-col justify-between border p-3 transition-colors duration-100 ${
+                      active ? 'border-accion bg-accion/10' : 'border-linea'
                     }`}
                   >
                     <input
@@ -206,36 +226,38 @@ export default function CheckoutPage() {
                       checked={active}
                       onChange={() => setTier(value)}
                       disabled={isBusy}
-                      className="h-5 w-5 shrink-0 accent-[#1a6a43]"
+                      className="h-5 w-5 shrink-0 accent-[#E8A33D]"
                     />
-                    <span className="flex-1">
-                      <span className="block text-[16px] font-semibold leading-tight">{title}</span>
-                      <span className="block text-[13px] text-gris">{sub}</span>
-                    </span>
-                    <span className="whitespace-nowrap text-right tabular-nums">
-                      {value === 'joven' && (
-                        <s className="mr-1.5 text-[13px] text-gris">{PRODUCT.priceLabel.replace(' MXN', '')}</s>
-                      )}
-                      <span className="text-[17px] font-semibold">{label.replace(' MXN', '')}</span>
+                    <span className="mt-2 block">
+                      <span className="block text-[14px] text-gris">{title}</span>
+                      <span className="display block text-[32px] tabular-nums">{label.replace(' MXN', '')}</span>
                     </span>
                   </label>
                 );
               })}
             </div>
             <p className="mt-2 text-[12px] leading-relaxed text-gris">
-              La edad es autodeclarada: al elegir el precio joven declaras que tienes menos de 25 años. El descuento
-              (código {PRODUCT.youthDiscountCode}) se aplica solo en el pago.
+              La edad es autodeclarada: al elegir el precio para menores de 25 declaras que tienes menos de 25 años. El
+              descuento (código {PRODUCT.youthDiscountCode}) se aplica solo en el pago.
             </p>
           </fieldset>
 
           <label htmlFor="email" className="mt-5 block text-[15px] font-medium">
-            Tu correo <span className="font-normal text-gris">(ahí llega el PDF)</span>
+            {askEmail && !isEmailValid ? (
+              <span className="text-accion">¿A qué correo te lo mandamos?</span>
+            ) : (
+              <>
+                Tu correo <span className="font-normal text-gris">(ahí llega el PDF)</span>
+              </>
+            )}
           </label>
           <input
+            ref={emailRef}
             id="email"
             type="email"
             inputMode="email"
             autoComplete="email"
+            enterKeyHint="go"
             required
             value={email}
             disabled={isBusy}
@@ -247,7 +269,7 @@ export default function CheckoutPage() {
             placeholder="tu@correo.com"
             aria-invalid={showEmailError}
             aria-describedby={showEmailError ? 'email-error' : undefined}
-            className={`mt-2 h-14 w-full border bg-white px-4 text-[17px] outline-none placeholder:text-gris-2 disabled:opacity-60 ${
+            className={`mt-2 h-14 w-full scroll-mt-24 border bg-white/[0.06] px-4 text-[18px] outline-none placeholder:text-gris-2 disabled:opacity-60 ${
               showEmailError ? 'border-rojo' : 'border-linea focus:border-tinta'
             }`}
           />
@@ -261,7 +283,7 @@ export default function CheckoutPage() {
             type="button"
             onClick={handleUnlock}
             disabled={isBusy}
-            className="mt-4 flex h-14 w-full items-center justify-between gap-3 bg-accion px-5 text-left text-[17px] font-semibold text-white transition-colors enabled:hover:bg-accion-2 disabled:cursor-wait disabled:opacity-70"
+            className="mt-4 flex h-16 w-full items-center justify-between gap-3 bg-accion px-5 text-left text-[18px] font-semibold text-papel transition-colors enabled:hover:bg-accion-2 disabled:cursor-wait disabled:opacity-70"
           >
             {status === 'saving' ? (
               <span className="flex items-center gap-2">
@@ -272,19 +294,21 @@ export default function CheckoutPage() {
               <>
                 <span className="flex items-center gap-2">
                   <Lock className="h-4 w-4 shrink-0" strokeWidth={2.25} />
-                  Pagar {price.label}
+                  Desbloquear mi reporte · {price.label.replace(' MXN', '')}
                 </span>
                 <ArrowRight className="h-5 w-5" strokeWidth={2.25} />
               </>
             )}
           </button>
 
-          <p className="mt-3 text-[13px] leading-relaxed text-tinta/80">{NO_REFUNDS}</p>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-gris">
-            Si el PDF no te llega o hay una falla técnica, escríbenos a{' '}
-            <a href="mailto:contacto@descifratufuturo.com" className="underline underline-offset-2">contacto@descifratufuturo.com</a> y lo
-            corregimos o te lo reenviamos.
+          <p className="mt-3 text-[13px] leading-relaxed text-gris">
+            Pago seguro con Shopify · tarjeta, y los métodos que aparezcan en el checkout.
           </p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-gris">
+            Te llega a tu correo en minutos. Si no te llega, escríbenos a{' '}
+            <a href="mailto:hola@descifratufuturo.com" className="underline underline-offset-2">hola@descifratufuturo.com</a>.
+          </p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-gris">{GUARANTEE_ENABLED ? GUARANTEE : NO_REFUNDS}</p>
 
           {status === 'error' && errorMessage && (
             <div role="alert" className="mt-4 flex items-start gap-3 border border-rojo p-3 text-[14px] text-rojo">
@@ -293,22 +317,15 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* Pídeselo a mamá o papá */}
-          <div className="mt-6 border-t border-linea pt-5">
-            <p className="text-[15px] font-medium">¿No tienes tarjeta?</p>
-            <p className="mt-1 text-[14px] leading-relaxed text-gris">
-              Mándale el enlace de pago a mamá o papá por WhatsApp. Cuando paguen, el PDF llega a tu correo.
-            </p>
-            <button
-              type="button"
-              onClick={handleShare}
-              disabled={isBusy}
-              className="mt-3 flex h-14 w-full items-center justify-center gap-2 border border-tinta bg-transparent px-5 text-[16px] font-semibold text-tinta transition-colors enabled:hover:bg-tinta enabled:hover:text-papel disabled:opacity-60"
-            >
-              {status === 'sharing' ? <Loader2 className="h-5 w-5 animate-spin" /> : null}
-              Pídeselo a mamá o papá
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleShare}
+            disabled={isBusy}
+            className="mt-5 inline-flex min-h-11 items-center gap-2 text-left text-[15px] text-gris underline underline-offset-4 hover:text-tinta disabled:opacity-60"
+          >
+            {status === 'sharing' ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            ¿Lo paga tu mamá o papá? Mándale el link por WhatsApp
+          </button>
 
           <p className="mt-5 text-[12px] leading-relaxed text-gris">
             El pago lo procesa Shopify. Nosotros nunca vemos ni guardamos los datos de tu tarjeta. Consulta nuestro{' '}
@@ -322,13 +339,13 @@ export default function CheckoutPage() {
           </p>
         )}
       </main>
-      <PayStickyCta label={`Desbloquear · desde ${PRODUCT.youthPriceLabel}`} />
+      <PayStickyCta label={`Desbloquear mi reporte · ${price.label.replace(' MXN', '')}`} onClick={handleUnlock} busy={isBusy} />
     </div>
   );
 }
 
 /** CTA fijo en móvil mientras la oferta (#pagar) sigue debajo del viewport. */
-function PayStickyCta({ label }: { label: string }) {
+function PayStickyCta({ label, onClick, busy }: { label: string; onClick: () => void; busy: boolean }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const target = document.getElementById('pagar');
@@ -348,14 +365,16 @@ function PayStickyCta({ label }: { label: string }) {
       style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
       aria-hidden={!visible}
     >
-      <a
-        href="#pagar"
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={busy}
         tabIndex={visible ? 0 : -1}
-        className="flex h-14 w-full items-center justify-between gap-3 bg-accion px-5 text-[17px] font-semibold text-white active:bg-accion-2"
+        className="flex h-14 w-full items-center justify-between gap-3 bg-accion px-5 text-left text-[17px] font-semibold text-papel active:bg-accion-2 disabled:opacity-70"
       >
         {label}
         <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
-      </a>
+      </button>
     </div>
   );
 }

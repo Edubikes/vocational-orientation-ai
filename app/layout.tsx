@@ -1,27 +1,13 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Newsreader } from 'next/font/google';
+import { Fraunces, Inter_Tight, JetBrains_Mono } from 'next/font/google';
 import MetaPixel from '@/components/MetaPixel';
 import { careers } from '@/lib/careers';
 import './globals.css';
 
-const inter = Inter({ variable: '--font-inter', subsets: ['latin'], display: 'swap' });
-// Newsreader: solo 400/600 (los pesos que usa el sitio). La cursiva va en una
-// instancia aparte y SOLO en 400 (estática, ≈25 KB en vez de la variable de ≈65 KB).
-// Ambas declaran la familia "Newsreader", así que `italic` la toma sola.
-const newsreader = Newsreader({
-  variable: '--font-newsreader',
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  style: ['normal'],
-  display: 'swap',
-});
-const newsreaderItalic = Newsreader({
-  variable: '--font-newsreader-italic',
-  subsets: ['latin'],
-  weight: ['400'],
-  style: ['italic'],
-  display: 'swap',
-});
+// Titulares: Fraunces variable con eje opsz (peso 400-600). Cuerpo: Inter Tight. Números de sección: mono.
+const fraunces = Fraunces({ variable: '--font-fraunces', subsets: ['latin'], axes: ['opsz'], style: ['normal', 'italic'], display: 'swap' });
+const interTight = Inter_Tight({ variable: '--font-inter', subsets: ['latin'], display: 'swap' });
+const mono = JetBrains_Mono({ variable: '--font-mono-jb', subsets: ['latin'], weight: ['400', '500'], display: 'swap' });
 
 const SITE_URL = 'https://descifratufuturo.com';
 
@@ -41,14 +27,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#f3f0e8',
-  colorScheme: 'light',
+  themeColor: '#0B0B0C',
+  colorScheme: 'dark',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es-MX">
-      <body className={`${inter.variable} ${newsreader.variable} ${newsreaderItalic.variable} antialiased`}>
+      <body className={`${interTight.variable} ${fraunces.variable} ${mono.variable} antialiased`}>
         {children}
         <MetaPixel />
       </body>

@@ -36,7 +36,7 @@ function send(...args: unknown[]) {
   (w.__fbqQ ??= []).push(args);
 }
 
-export function track(event: 'PageView' | 'ViewContent' | 'InitiateCheckout' | 'Lead', params?: Record<string, unknown>) {
+export function track(event: 'PageView' | 'ViewContent' | 'InitiateCheckout' | 'Lead' | 'AddToCart', params?: Record<string, unknown>) {
   send('track', event, params);
 }
 

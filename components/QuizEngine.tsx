@@ -224,6 +224,7 @@ export default function QuizEngine({ onComplete }: QuizEngineProps) {
         </div>
         <p className="mx-auto mt-1.5 max-w-2xl text-[12px] text-gris-2">
           Bloque {Math.min(Math.floor(index / 15) + 1, totalBlocks)} de {totalBlocks}
+          {answeredCount === 0 && ' · ya te regalamos un tramo del bloque 1'}
         </p>
       </header>
 
@@ -257,8 +258,8 @@ export default function QuizEngine({ onComplete }: QuizEngineProps) {
                       role="radio"
                       aria-checked={active}
                       onClick={() => handleSelect(option.id)}
-                      className={`group flex min-h-14 w-full items-center gap-3 border px-3 py-3 text-left transition-colors duration-100 ${
-                        active ? 'border-tinta bg-tinta text-papel' : 'border-linea bg-white/70 text-tinta hover:border-tinta'
+                      className={`group flex min-h-[52px] w-full items-center gap-3 border px-3 py-3 text-left transition-colors duration-100 ${
+                        active ? 'border-tinta bg-tinta text-papel' : 'border-linea bg-white/[0.04] text-tinta hover:border-tinta'
                       }`}
                     >
                       <span
@@ -299,12 +300,12 @@ function IntroScreen({ onStart, total }: { onStart: () => void; total: number })
           No hay respuestas buenas. Contesta lo que <em className="font-normal">harías</em>, no lo que se ve bien.
         </h1>
         <p className="mt-5 text-[17px] leading-relaxed text-tinta/85">
-          Son {total} preguntas en 4 bloques (≈8 minutos). Cada 15 te enseñamos cómo vas. Al final vas a ver cómo sales en estas{' '}
+          Son {total} preguntas en 4 bloques de 15; el bloque 1 ya cuenta como empezado (≈12 minutos). Cada 15 te enseñamos cómo vas. Al final vas a ver cómo sales en estas{' '}
           {ALL_STYLES.length} dimensiones:
         </p>
         <ul className="mt-4 flex flex-wrap gap-2">
           {ALL_STYLES.map((s) => (
-            <li key={s} className="border border-linea bg-white/70 px-2.5 py-1 text-[14px]">
+            <li key={s} className="border border-linea bg-white/[0.04] px-2.5 py-1 text-[14px]">
               {s}
             </li>
           ))}
@@ -314,7 +315,7 @@ function IntroScreen({ onStart, total }: { onStart: () => void; total: number })
           <button
             type="button"
             onClick={onStart}
-            className="flex h-14 w-full items-center justify-between bg-accion px-5 text-[17px] font-semibold text-white hover:bg-accion-2"
+            className="flex h-14 w-full items-center justify-between bg-accion px-5 text-[17px] font-semibold text-papel hover:bg-accion-2"
           >
             Va, empezar
             <ArrowRight className="h-5 w-5" aria-hidden="true" />
@@ -339,18 +340,18 @@ const CP_COPY = (state: CheckpointState): { title: string; body: string } => {
   const faltan = 12 - readout.stylesCovered;
   if (block === 1)
     return {
-      title: `Primer patrón: ${leader} va arriba.`,
+      title: `Hasta ahora apuntas a: ${leader}.`,
       body: faltan > 0 ? `Todavía faltan ${faltan} dimensiones por medir.` : 'Ya hay datos de las 12 dimensiones.',
     };
   if (block === 2)
     return {
-      title: 'Vas a la mitad.',
+      title: `Vas a la mitad. Hasta ahora apuntas a: ${leader}.`,
       body:
         previousLeader && previousLeader !== leader
           ? `${leader} le quitó el primer lugar a ${previousLeader}. Tu arquetipo empieza a definirse.`
           : `${leader} se mantiene arriba. Tu arquetipo empieza a definirse.`,
     };
-  return { title: 'Faltan 15.', body: 'Tu arquetipo ya tiene forma; las últimas preguntas deciden tu ruta #1.' };
+  return { title: `Faltan 15. Hasta ahora apuntas a: ${leader}.`, body: 'Tu arquetipo ya tiene forma; las últimas preguntas deciden tu ruta #1.' };
 };
 
 function CheckpointScreen({
@@ -385,7 +386,7 @@ function CheckpointScreen({
       <h2 className="mt-2 font-serif text-[1.9rem] font-semibold leading-[1.1]">{copy.title}</h2>
       <p className="mt-2 text-[17px] leading-relaxed text-tinta/85">{copy.body}</p>
 
-      <div className="mt-6 border border-linea bg-white/70 p-4">
+      <div className="mt-6 border border-linea bg-white/[0.04] p-4">
         <p className="text-[13px] text-gris">Lectura parcial · % del máximo posible hasta aquí</p>
         <ul className="mt-3 space-y-3">
           {top.map((item, i) => (
@@ -419,7 +420,7 @@ function CheckpointScreen({
               if (e.key === 'Enter') handleContinue();
             }}
             placeholder="Tu nombre"
-            className="mt-2 h-14 w-full border border-linea bg-white px-4 text-[17px] outline-none placeholder:text-gris-2 focus:border-tinta"
+            className="mt-2 h-14 w-full border border-linea bg-white/[0.06] px-4 text-[17px] outline-none placeholder:text-gris-2 focus:border-tinta"
           />
         </div>
       )}

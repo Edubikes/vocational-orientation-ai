@@ -79,3 +79,6 @@ export function priceFor(tier: PriceTier): { mxn: number; label: string; discoun
     ? { mxn: PRODUCT.youthPriceMXN, label: PRODUCT.youthPriceLabel, discount: PRODUCT.youthDiscountCode }
     : { mxn: PRODUCT.priceMXN, label: PRODUCT.priceLabel };
 }
+
+/** Garantía de devolución. Dejar en false hasta que Eduardo la apruebe. */
+export const GUARANTEE_ENABLED = false;

@@ -85,7 +85,7 @@ export function StickyCta({ targetId, href, label }: { targetId: string; href: s
       <Link
         href={href}
         tabIndex={visible ? 0 : -1}
-        className="flex h-14 w-full items-center justify-between gap-3 bg-accion px-5 text-[17px] font-semibold text-white active:bg-accion-2"
+        className="flex h-14 w-full items-center justify-between gap-3 bg-accion px-5 text-[17px] font-semibold text-papel active:bg-accion-2"
       >
         {label}
         <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />

@@ -29,6 +29,9 @@ export default function SiteFooter({ showSources = true }: { showSources?: boole
             <Link href="/aviso-de-privacidad" className="underline decoration-linea underline-offset-4 hover:text-tinta">
               Aviso de privacidad
             </Link>
+            <a href="mailto:hola@descifratufuturo.com" className="underline decoration-linea underline-offset-4 hover:text-tinta">
+              hola@descifratufuturo.com
+            </a>
             <Link href="/test" className="underline decoration-linea underline-offset-4 hover:text-tinta">
               Hacer el test
             </Link>
