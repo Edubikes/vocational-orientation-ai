@@ -1,34 +1,46 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google"; // Corrected font variable names to match what typically works or is used
-import "./globals.css";
+import type { Metadata, Viewport } from 'next';
+import { Inter_Tight, Syne } from 'next/font/google';
+import { SiteNav } from '@/components/nav/SiteNav';
+import './globals.css';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const display = Syne({
+    subsets: ['latin'],
+    weight: ['600', '700', '800'],
+    variable: '--font-display',
+    display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const ui = Inter_Tight({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    variable: '--font-ui',
+    display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: "Test de Orientación Vocacional IA | Resultados Oficiales",
-  description: "Descubre tu carrera ideal y en qué universidad estudiar con nuestro test vocacional basado en neurociencia e IA. Resultados precisos en 10 minutos.",
+    title: 'Descifra Tu Futuro',
+    description:
+        'Sesenta preguntas en voz alta, un arquetipo y ocho rutas con datos de México. SORE.',
+};
+
+export const viewport: Viewport = {
+    themeColor: '#F7F1E6',
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover',
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="es">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
-  );
+    return (
+        <html lang="es-MX" className={`${display.variable} ${ui.variable}`}>
+            <body>
+                <SiteNav />
+                {children}
+            </body>
+        </html>
+    );
 }

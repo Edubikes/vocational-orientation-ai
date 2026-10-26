@@ -36,8 +36,9 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json({ sessionId: session.id, url: session.url });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const message = err instanceof Error ? err.message : 'No se pudo iniciar el pago';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

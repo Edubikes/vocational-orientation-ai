@@ -38,28 +38,30 @@ export default function RadarChart({ scores }: Props) {
             {
                 label: 'Perfil Cognitivo',
                 data: styles.map(s => scores[s]),
-                backgroundColor: 'rgba(147, 51, 234, 0.2)', // Purple-500 optimized
-                borderColor: 'rgba(147, 51, 234, 1)',
-                borderWidth: 2,
-                pointBackgroundColor: 'rgba(255, 255, 255, 1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(147, 51, 234, 1)',
+                backgroundColor: 'rgba(224, 32, 32, 0.16)',
+                borderColor: '#111111',
+                borderWidth: 1.5,
+                pointBackgroundColor: '#E02020',
+                pointBorderColor: '#111111',
+                pointHoverBackgroundColor: '#111111',
+                pointHoverBorderColor: '#E02020',
             },
         ],
     };
 
     const options = {
+        responsive: true,
+        maintainAspectRatio: false,
         scales: {
             r: {
                 angleLines: {
-                    color: 'rgba(255, 255, 255, 0.1)'
+                    color: 'rgba(17, 17, 17, 0.16)'
                 },
                 grid: {
-                    color: 'rgba(255, 255, 255, 0.1)'
+                    color: 'rgba(17, 17, 17, 0.16)'
                 },
                 pointLabels: {
-                    color: 'rgba(255, 255, 255, 0.7)',
+                    color: '#111111',
                     font: {
                         size: 11
                     }
