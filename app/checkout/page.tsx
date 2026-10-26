@@ -45,7 +45,7 @@ export default function CheckoutPage() {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="max-w-md w-full bg-white border border-gray-100 rounded-3xl p-8 shadow-soft"
+                className="max-w-md w-full bg-[var(--card)] border border-[var(--rule)] rounded-3xl p-8 shadow-soft"
             >
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Check className="w-8 h-8 text-[var(--primary)]" />
@@ -74,9 +74,9 @@ export default function CheckoutPage() {
                 <div className="text-center mb-6">
                     <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase tracking-wide">Oferta Limitada</span>
                     <div className="flex items-end justify-center gap-2 mt-2">
-                        <span className="text-4xl font-bold text-gray-900">$20</span>
-                        <span className="text-xl text-gray-400 mb-1">.00 MXN</span>
-                        <span className="text-lg text-gray-300 line-through mb-1 decoration-red-400 decoration-2">$299</span>
+                        <span className="text-lg text-gray-400 line-through mb-1 decoration-2">$99</span>
+                        <span className="text-4xl font-bold text-gray-900">$10</span>
+                        <span className="text-xl text-gray-400 mb-1">MXN</span>
                     </div>
                 </div>
 
@@ -93,16 +93,9 @@ export default function CheckoutPage() {
                     )}
                 </button>
 
-                <div className="mt-6 flex justify-center gap-6 pt-6 border-t border-gray-100 opacity-60 grayscale hover:grayscale-0 transition-all">
-                    <span className="flex flex-col items-center">
-                        <Lock className="w-4 h-4 mb-1" />
-                        <span className="text-[10px] font-bold">SSL SEGURO</span>
-                    </span>
-                    <span className="flex flex-col items-center">
-                        <Check className="w-4 h-4 mb-1" />
-                        <span className="text-[10px] font-bold">GARANTIZADO</span>
-                    </span>
-                </div>
+                <p className="mt-6 pt-6 border-t border-gray-100 text-center text-xs font-bold tracking-wide text-gray-500">
+                    último día · 25 de octubre
+                </p>
             </motion.div>
         </div>
     );

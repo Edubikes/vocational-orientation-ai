@@ -38,7 +38,7 @@ const FAQ = [
     },
     {
         q: '¿Cuánto cuesta y qué llega?',
-        a: '$20 MXN. El análisis completo —ocho rutas, universidades y materias— llega al correo.',
+        a: '$10 MXN, antes $99. El análisis completo —ocho rutas, universidades y materias— llega al correo.',
     },
 ];
 
@@ -363,9 +363,11 @@ export default function Landing() {
                     <p className="kicker">05 — Precio</p>
                     <h2>El análisis completo.</h2>
                     <p className="price">
-                        <span>$20</span>
+                        <s>$99</s>
+                        <span>$10</span>
                         <small>MXN</small>
                     </p>
+                    <p className="offer-day">último día</p>
                     <p className="lede">Arquetipo y ruta 1, antes. El resto, al correo, después de pagar.</p>
                     <a ref={endCta} className="cta" href="/test?voice=1" onClick={goTest}>
                         Acércate a tu futuro

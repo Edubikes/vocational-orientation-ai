@@ -101,6 +101,51 @@ body::before {
   top: 8px;
 }
 
+.offer-banner {
+  background: var(--paper);
+  color: var(--ink);
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--rule);
+  text-align: center;
+}
+
+.offer-day {
+  margin: 0;
+  color: #e02020;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.offer-now {
+  margin: 6px 0 0;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: clamp(36px, 9.4vw, 76px);
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+}
+
+.offer-was {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 8px;
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.offer-was s {
+  font-family: var(--font-display), sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-decoration-thickness: 2px;
+  color: rgba(17, 17, 17, 0.45);
+}
+
 .site-nav {
   position: sticky;
   top: 0;
@@ -958,8 +1003,19 @@ h1,
 .cierre .price {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 10px;
   margin: 18px 0 0;
+}
+
+.price s {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(28px, 8vw, 48px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-decoration-thickness: 3px;
+  color: rgba(17, 17, 17, 0.4);
+  margin-bottom: 8px;
 }
 
 .price span {
@@ -1258,6 +1314,11 @@ h1,
   color: var(--muted);
 }
 
+.paydock s {
+  margin-right: 4px;
+  text-decoration-thickness: 1px;
+}
+
 .report {
   padding: 28px 20px 72px;
 }
@@ -1530,7 +1591,15 @@ h1,
     margin-left: 8px;
     font-size: 13px;
     letter-spacing: 0.08em;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .nav-price s {
     color: var(--muted);
+    font-weight: 600;
+    margin-right: 6px;
+    text-decoration-thickness: 1px;
   }
 
   .hook {

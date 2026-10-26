@@ -25,7 +25,7 @@ export async function POST(request: Request) {
                             name: 'Informe Vocacional Premium',
                             description: 'Análisis completo de perfil cerebral y carreras compatibles.',
                         },
-                        unit_amount: 2000, // $20.00 MXN in cents
+                        unit_amount: 1000, // $10.00 MXN
                     },
                     quantity: 1,
                 },

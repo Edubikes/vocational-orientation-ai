@@ -92,7 +92,9 @@ export function SiteNav() {
                             {link.label}
                         </Link>
                     ))}
-                    <span className="nav-price">$20 MXN</span>
+                    <span className="nav-price">
+                        <s>$99</s> $10 MXN
+                    </span>
                     <Link href="/test?voice=1" className="nav-text nav-start" onClick={start}>
                         Empezar
                     </Link>
@@ -124,7 +126,7 @@ export function SiteNav() {
                         Ocho rutas
                     </Link>
                     <Link href="/#cierre" onClick={hide}>
-                        Precio · $20 MXN
+                        Precio · $10 MXN
                     </Link>
                     <Link className="cta sheet-cta" href="/test?voice=1" onClick={start}>
                         Acércate a tu futuro

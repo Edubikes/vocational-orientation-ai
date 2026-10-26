@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter_Tight, Syne } from 'next/font/google';
+import { OfferBanner } from '@/components/offer/OfferBanner';
 import { SiteNav } from '@/components/nav/SiteNav';
 import './globals.css';
 
@@ -38,6 +39,7 @@ export default function RootLayout({
     return (
         <html lang="es-MX" className={`${display.variable} ${ui.variable}`}>
             <body>
+                <OfferBanner />
                 <SiteNav />
                 {children}
             </body>

@@ -96,7 +96,9 @@ export default function PerfilClient() {
                 <Link className="cta" href="/checkout" prefetch={false}>
                     Acércate a tu futuro
                 </Link>
-                <p>$20 MXN · análisis completo al correo</p>
+                <p>
+                    <s>$99</s> $10 MXN · análisis completo al correo
+                </p>
             </div>
         </div>
     );
