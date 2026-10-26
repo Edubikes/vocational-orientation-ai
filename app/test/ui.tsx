@@ -54,7 +54,7 @@ export default function TestClient() {
         setProcessing(true);
         window.setTimeout(() => {
             transitionTo(router, promo ? '/perfil?promo=1' : '/perfil');
-        }, promo ? 700 : 900);
+        }, promo ? 1400 : 900);
     };
 
     const select = (optionId: string) => {
@@ -86,7 +86,7 @@ export default function TestClient() {
         const timerId = window.setTimeout(() => {
             const option = questions[index].options[Math.min(1, questions[index].options.length - 1)];
             select(option.id);
-        }, 3000);
+        }, 4500);
         return () => window.clearTimeout(timerId);
         // select is recreated each render; the promo beat is keyed only by the question index.
         // eslint-disable-next-line react-hooks/exhaustive-deps

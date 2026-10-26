@@ -18,19 +18,19 @@ Piso del brief: 9.3. La nota de TTS no sube más porque en este entorno Chrome n
 
 ## Checklist
 
-- Fondo `#ffffff`. CTA `#E02020` con el copy «Acércate a tu futuro».
-- Sin `#f5f5f7`, sin `#0071e3`, sin GSAP, sin Lenis, sin hero 3D.
+- Fondo papel vivo `#F7F1E6` con grano animado. No es `#ffffff` ni `#f5f5f7`. CTA `#E02020` con el copy «Acércate a tu futuro».
+- Sin `#0071e3`, sin GSAP, sin Lenis, sin three.js. El hero es un canvas 2D (constelación de tinta, pointer/touch). `prefers-reduced-motion` lo cambia por puntos CSS.
 - 390px: `scrollWidth` igual a `clientWidth` en landing, ritual, quiz, perfil, cierre y menú.
 - Banco real: `questions.length` (60). Scoring intacto en `lib/score.ts` (mismo loop y mismo ranking).
 - Checkout: la sesión de pago no cambió. Solo el `catch` pasó de `any` a `unknown` para que el lint compile. Sin llaves, `POST /api/checkout` sigue devolviendo `/results`.
-- Promo: `/?promo=1` y `/promo` recorren landing → prueba → perfil. Reel medido 18.8s. Termina en `/perfil?promo=1`.
+- Promo: `/?promo=1` y `/promo` recorren landing → prueba → perfil en ~20s (ritual 3.8s, examen 8.2s, dos sellos a 4.5s, cierre 1.4s). Termina en `/perfil?promo=1`.
 - `prefers-reduced-motion` corta la entrada y el autoplay de voz. Mute en `sessionStorage`.
 
 ## Cómo filmar
 
 1. Teléfono o emulador 390×844, movimiento del sistema en normal, volumen abierto.
 2. Audio: abre `https://<preview>/?promo=1` y, en el primer segundo, toca el titular (no el botón). Ese gesto desbloquea la voz. Escape detiene el recorrido.
-3. Mudo: el mismo URL sin tocar nada. 0–2s titular y tres pasos. ~2s la pregunta. ~5s el examen. ~13s el perfil con la ruta 1 nítida, el resto velado y el botón rojo.
+3. Mudo: el mismo URL sin tocar nada. 0–4s titular, constelación y morph pregunta → perfil → futuro. ~4s la pregunta de muestra. ~8s el examen. ~20s el perfil con la ruta 1 nítida, el resto en dissolve y el botón rojo.
 4. Para grabar solo el examen con voz: entra por «Acércate a tu futuro» (el tap arma la lectura) o abre `/test` y pulsa Escuchar.
 
 ## Archivos

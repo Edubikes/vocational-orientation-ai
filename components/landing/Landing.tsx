@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { LogoMark } from '@/components/brand/LogoMark';
 import { ExamStage } from '@/components/exam/ExamStage';
+import { InkField } from '@/components/hero/InkField';
 import { careers } from '@/lib/careers';
 import { transitionTo } from '@/lib/navigate';
 import { questions } from '@/lib/questions';
@@ -40,8 +42,90 @@ const FAQ = [
     },
 ];
 
+const RITUAL = [
+    {
+        title: 'Pregunta',
+        body: 'Cada pregunta se lee en voz alta. Tú eliges de la a a la e.',
+    },
+    {
+        title: 'Perfil',
+        body: 'El arquetipo queda a la vista. La primera ruta, nítida. Las otras siete, veladas.',
+    },
+    {
+        title: 'Futuro',
+        body: 'Ocho rutas, universidades y materias, al correo.',
+    },
+];
+
 function money(value: string) {
     return /\d/.test(value) ? `${value} MXN` : value;
+}
+
+function RitualMorph() {
+    const reduce = useReducedMotion();
+    const [beat, setBeat] = useState(0);
+
+    useEffect(() => {
+        if (reduce) return;
+        const timer = window.setInterval(() => {
+            setBeat((current) => (current + 1) % RITUAL.length);
+        }, 2800);
+        return () => window.clearInterval(timer);
+    }, [reduce]);
+
+    if (reduce) {
+        return (
+            <ol className="beats">
+                {RITUAL.map((step, index) => (
+                    <li key={step.title}>
+                        <span>{String(index + 1).padStart(2, '0')}</span>
+                        <div>
+                            <strong>{step.title}</strong>
+                            <p>{step.body}</p>
+                        </div>
+                    </li>
+                ))}
+            </ol>
+        );
+    }
+
+    const step = RITUAL[beat];
+    return (
+        <div className="morph" aria-live="polite">
+            <div className={`morph-glyph is-${beat}`} aria-hidden>
+                <i />
+                <i />
+                <i />
+            </div>
+            <div className="morph-copy">
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                        key={step.title}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        <strong>{step.title}</strong>
+                        <p>{step.body}</p>
+                    </motion.div>
+                </AnimatePresence>
+                <div className="morph-dots">
+                    {RITUAL.map((item, index) => (
+                        <button
+                            key={item.title}
+                            type="button"
+                            aria-label={item.title}
+                            aria-pressed={index === beat}
+                            onClick={() => setBeat(index)}
+                        >
+                            <i />
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default function Landing() {
@@ -119,11 +203,11 @@ export default function Landing() {
         const toRitual = window.setTimeout(() => {
             if (!alive) return;
             document.getElementById('ritual')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 2200);
+        }, 3800);
         const toTest = window.setTimeout(() => {
             if (!alive) return;
             transitionTo(router, '/test?promo=1');
-        }, 5200);
+        }, 8200);
 
         return () => {
             alive = false;
@@ -148,6 +232,7 @@ export default function Landing() {
         <div className="dtf">
             <main id="contenido">
                 <section className="hook" id="hook">
+                    <InkField />
                     <div className="hook-copy">
                         <p className="kicker rise d1">SORE · {total} preguntas</p>
                         <h1 className="rise d2">
@@ -162,29 +247,7 @@ export default function Landing() {
                         <p className="micro">Sin registro. Cerca de doce minutos. La voz se apaga cuando quieras.</p>
                     </div>
 
-                    <ol className="beats">
-                        <li>
-                            <span>01</span>
-                            <div>
-                                <strong>Respondes</strong>
-                                <p>Cada pregunta se lee en voz alta. Tú eliges de la a a la e.</p>
-                            </div>
-                        </li>
-                        <li>
-                            <span>02</span>
-                            <div>
-                                <strong>Lees el perfil</strong>
-                                <p>El arquetipo queda a la vista. La primera ruta, nítida. Las otras siete, veladas.</p>
-                            </div>
-                        </li>
-                        <li>
-                            <span>03</span>
-                            <div>
-                                <strong>Recibes el análisis</strong>
-                                <p>Ocho rutas, universidades y materias, al correo.</p>
-                            </div>
-                        </li>
-                    </ol>
+                    <RitualMorph />
                 </section>
 
                 <section className="band" id="ritual">
@@ -285,7 +348,7 @@ export default function Landing() {
                             ))}
                         </div>
                         {activeRoute ? (
-                            <article className="mapa-detail">
+                            <article className="mapa-detail" key={activeRoute.name}>
                                 <p className="kicker">Ruta {String(routeIndex + 1).padStart(2, '0')}</p>
                                 <h3>{activeRoute.name}</h3>
                                 <p>{activeRoute.description}</p>
