@@ -18,7 +18,7 @@ Piso del brief: 9.3. La nota de TTS no sube más porque en este entorno Chrome n
 
 ## Checklist
 
-- Fondo `#F7F1E6`. CTA `#E02020` con el copy «Acércate a tu futuro».
+- Fondo `#ffffff`. CTA `#E02020` con el copy «Acércate a tu futuro».
 - Sin `#f5f5f7`, sin `#0071e3`, sin GSAP, sin Lenis, sin hero 3D.
 - 390px: `scrollWidth` igual a `clientWidth` en landing, ritual, quiz, perfil, cierre y menú.
 - Banco real: `questions.length` (60). Scoring intacto en `lib/score.ts` (mismo loop y mismo ranking).

@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f1e6;
+  --background: #ffffff;
   --foreground: #111111;
   --primary: #e02020;
   --secondary: #111111;
-  --card: #fffaf3;
-  --paper: #f7f1e6;
+  --card: #ffffff;
+  --paper: #ffffff;
   --ink: #111111;
   --ink-soft: #1a1a1a;
   --signal: #e02020;
@@ -38,7 +38,7 @@ body {
 
 ::selection {
   background: #111111;
-  color: #f7f1e6;
+  color: #ffffff;
 }
 
 .shadow-soft {
@@ -47,11 +47,11 @@ body {
 
 .boot-fallback {
   min-height: 100svh;
-  background: #f7f1e6;
+  background: #ffffff;
 }
 
 .dtf {
-  background: #f7f1e6;
+  background: #ffffff;
   color: #111111;
 }
 
@@ -77,7 +77,7 @@ body {
   left: 12px;
   top: -40px;
   background: #111;
-  color: #f7f1e6;
+  color: #ffffff;
   padding: 8px 12px;
   z-index: 50;
 }
@@ -90,7 +90,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #f7f1e6;
+  background: #ffffff;
   border-bottom: 1px solid var(--rule);
   padding-top: env(safe-area-inset-top);
 }
@@ -104,7 +104,7 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding: 0 16px 0 20px;
-  background: #f7f1e6;
+  background: #ffffff;
 }
 
 .brand {
@@ -119,7 +119,7 @@ body {
   place-items: center;
   border-radius: 50%;
   background: #111111;
-  color: #f7f1e6;
+  color: #ffffff;
   font-family: var(--font-display), sans-serif;
   font-weight: 700;
   line-height: 1;
@@ -177,7 +177,7 @@ body {
 .sheet {
   position: fixed;
   inset: calc(56px + env(safe-area-inset-top)) 0 0 0;
-  background: #f7f1e6;
+  background: #ffffff;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -427,14 +427,14 @@ h1,
   padding: 10px 12px;
   border: 1px solid var(--rule);
   border-radius: 12px;
-  background: #fffaf3;
+  background: #ffffff;
   font-size: 17px;
   line-height: 1.3;
 }
 
 .option.is-on {
   background: #111111;
-  color: #f7f1e6;
+  color: #ffffff;
   border-color: #111111;
 }
 
@@ -463,7 +463,7 @@ h1,
   gap: 8px 12px;
   align-items: center;
   padding: 10px 12px;
-  background: #fffaf3;
+  background: #ffffff;
   border-top: 1px solid var(--rule);
 }
 
@@ -538,7 +538,7 @@ h1,
   font-size: 13px;
   font-weight: 600;
   padding: 0 4px;
-  background: #f7f1e6;
+  background: #ffffff;
 }
 
 .voice-controls button:disabled {
@@ -549,7 +549,7 @@ h1,
 .voice-controls button:active:not(:disabled) {
   transform: scale(0.98);
   background: #111111;
-  color: #f7f1e6;
+  color: #ffffff;
 }
 
 .split {
@@ -599,7 +599,7 @@ h1,
   right: 36px;
   top: 16px;
   height: 214px;
-  background: #fffaf3;
+  background: #ffffff;
   border: 1px solid var(--rule);
   border-radius: 12px;
   padding: 16px;
@@ -607,7 +607,7 @@ h1,
 
 .sheet-back {
   transform: translate(22px, 14px) rotate(3deg);
-  background: #f3ecdf;
+  background: rgba(17, 17, 17, 0.04);
 }
 
 .sheet-mid {
@@ -681,13 +681,13 @@ h1,
 }
 
 .route-btn.is-on {
-  background: #fffaf3;
+  background: #ffffff;
   border-left: 2px solid #e02020;
   padding-left: 8px;
 }
 
 .mapa-detail {
-  background: #fffaf3;
+  background: #ffffff;
   border-radius: 12px;
   padding: 16px;
   border: 1px solid var(--rule);
@@ -793,7 +793,7 @@ h1,
   bottom: 0;
   z-index: 12;
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-  background: #f7f1e6;
+  background: #ffffff;
   border-top: 1px solid var(--rule);
   transform: translateY(110%);
 }
@@ -819,7 +819,7 @@ h1,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f7f1e6;
+  background: #ffffff;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -1004,7 +1004,7 @@ h1,
   bottom: 0;
   z-index: 12;
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-  background: #f7f1e6;
+  background: #ffffff;
   border-top: 1px solid var(--rule);
 }
 
@@ -1034,7 +1034,7 @@ h1,
   padding: 0 14px;
   border: 1px solid var(--rule);
   border-radius: 12px;
-  background: #fffaf3;
+  background: #ffffff;
   font: inherit;
   font-size: 15px;
   font-weight: 600;
@@ -1247,7 +1247,7 @@ h1,
     left: 0;
     width: min(420px, 70vw);
     padding: 18px 18px 12px;
-    background: #fffaf3;
+    background: #ffffff;
     border: 1px solid var(--rule);
     border-radius: 12px;
   }
