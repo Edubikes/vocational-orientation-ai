@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Check, Lock, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { PRICE_LABEL } from "@/lib/price";
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -41,7 +42,7 @@ export default function CheckoutPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans flex items-center justify-center p-4">
+        <div className="min-h-screen bg-white text-[var(--foreground)] font-sans flex items-center justify-center p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -63,7 +64,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <Sparkles className="w-5 h-5 text-blue-500" />
-                        <span className="text-sm font-medium text-gray-700">Top 10 Carreras + Universidades</span>
+                        <span className="text-sm font-medium text-gray-700">Ocho rutas + universidades en México</span>
                     </div>
                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <Sparkles className="w-5 h-5 text-amber-500" />
@@ -72,12 +73,12 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="text-center mb-6">
-                    <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase tracking-wide">Oferta Limitada</span>
+                    <p className="text-xs font-bold tracking-[0.14em] uppercase text-gray-500">Informe completo</p>
                     <div className="flex items-end justify-center gap-2 mt-2">
-                        <span className="text-4xl font-bold text-gray-900">$20</span>
-                        <span className="text-xl text-gray-400 mb-1">.00 MXN</span>
-                        <span className="text-lg text-gray-300 line-through mb-1 decoration-red-400 decoration-2">$299</span>
+                        <span className="text-5xl font-bold text-gray-900">{PRICE_LABEL}</span>
+                        <span className="text-xl text-gray-500 mb-1">MXN</span>
                     </div>
+                    <p className="text-sm text-gray-500 mt-2">Un pago. El precio del informe.</p>
                 </div>
 
                 <button
@@ -88,7 +89,7 @@ export default function CheckoutPage() {
                     {loading ? 'Procesando...' : (
                         <>
                             <Lock className="w-4 h-4" />
-                            DESBLOQUEAR MI FUTURO
+                            PAGAR {PRICE_LABEL} MXN
                         </>
                     )}
                 </button>

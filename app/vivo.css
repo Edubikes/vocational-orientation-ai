@@ -1,0 +1,737 @@
+.vivo-root,
+.vivo {
+  background: #ffffff;
+  color: #111111;
+  font-family: var(--vivo-sans), "Outfit", "Segoe UI", sans-serif;
+}
+
+.vivo {
+  min-height: 100svh;
+  color-scheme: light;
+}
+
+.vivo.is-sticky {
+  padding-bottom: calc(84px + env(safe-area-inset-bottom));
+}
+
+.vivo h1,
+.vivo h2,
+.vivo h3,
+.vivo p {
+  margin: 0;
+}
+
+.vivo a {
+  color: inherit;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+
+.vivo button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  touch-action: manipulation;
+}
+
+.vivo :focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 3px;
+}
+
+.vivo ::selection {
+  background: #111111;
+  color: #ffffff;
+}
+
+.d-mark {
+  display: inline-grid;
+  place-items: center;
+  background: #111111;
+  color: #ffffff;
+  font-family: var(--vivo-display), "Arial Black", sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  flex: none;
+}
+
+.vivo-skip {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  transform: translateY(-160%);
+  background: #111111;
+  color: #ffffff;
+  padding: 8px 12px;
+  z-index: 40;
+}
+
+.vivo-skip:focus {
+  transform: none;
+}
+
+.vivo-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #ffffff;
+  border-bottom: 1px solid #111111;
+}
+
+.vivo-bar-inner,
+.vivo main,
+.vivo-foot-inner {
+  width: min(1120px, 100%);
+  margin-inline: auto;
+}
+
+.vivo-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  padding: calc(8px + env(safe-area-inset-top)) 20px 8px;
+}
+
+.vivo-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--vivo-display), sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.04em;
+}
+
+.vivo-bar-inner > a:last-child,
+.vivo-foot-inner > a {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid #111111;
+}
+
+.vivo main {
+  padding-inline: 20px;
+}
+
+.vivo-kicker {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.vivo-hero {
+  padding-block: 28px 36px;
+}
+
+.vivo-hero h1,
+.vivo-section h2,
+.vivo-ritual-copy p,
+.vivo-price {
+  font-family: var(--vivo-display), "Bricolage Grotesque", "Arial Narrow", sans-serif;
+}
+
+.vivo-hero h1 {
+  margin-top: 12px;
+  font-size: clamp(2.35rem, 10.6vw, 5.4rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.vivo-hero h1 em {
+  font-style: normal;
+  color: #e02020;
+}
+
+.vivo-lede {
+  margin-top: 16px;
+  max-width: 38ch;
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+
+.vivo-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 22px;
+  padding-inline: 18px;
+  background: #e02020;
+  color: #ffffff;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.vivo-cta:active {
+  background: #c41616;
+}
+
+.vivo-micro {
+  margin-top: 12px;
+  color: #3a3a3a;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.vivo-ticker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #111111;
+}
+
+.vivo-ticker span {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.vivo-ticker b {
+  display: block;
+  overflow: hidden;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  animation: vivo-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vivo-frame {
+  position: relative;
+  height: 250px;
+  margin-top: 22px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #111111;
+  touch-action: pan-y;
+}
+
+.vivo-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.vivo-frame-label,
+.vivo-frame-hint {
+  position: absolute;
+  z-index: 1;
+  margin: 0;
+  padding: 6px 8px;
+  background: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.vivo-frame-label {
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  border-right: 1px solid #111111;
+  border-bottom: 1px solid #111111;
+}
+
+.vivo-frame-label i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  background: #e02020;
+  animation: vivo-pulse 1.6s ease-in-out infinite;
+}
+
+.vivo-frame-hint {
+  right: 0;
+  bottom: 0;
+  border-top: 1px solid #111111;
+  border-left: 1px solid #111111;
+}
+
+.vivo-frame .pull,
+.vivo-frame[data-pull] .idle {
+  display: none;
+}
+
+.vivo-frame[data-pull] .pull {
+  display: inline;
+}
+
+.vivo-section {
+  padding-block: 42px;
+  border-top: 1px solid #111111;
+}
+
+.vivo-section h2 {
+  margin-top: 8px;
+  font-size: clamp(2rem, 8vw, 3.4rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+
+.vivo-ritual {
+  margin-top: 22px;
+}
+
+.vivo-ritual-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.vivo-ritual-nav button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 68px;
+  padding: 10px 8px 14px;
+  overflow: hidden;
+  border: 1px solid #111111;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.vivo-ritual-nav button span {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.vivo-ritual-nav button.is-on {
+  background: #111111;
+  color: #ffffff;
+}
+
+.vivo-step-fill {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #e02020;
+  transform-origin: left center;
+  animation: vivo-fill 3.4s linear;
+}
+
+.vivo-ritual-copy p {
+  margin-top: 18px;
+  font-size: clamp(1.55rem, 5.6vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  animation: vivo-rise 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vivo-beats {
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vivo-beats li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  padding-block: 14px;
+  border-top: 1px solid #111111;
+}
+
+.vivo-beats li:last-child {
+  border-bottom: 1px solid #111111;
+}
+
+.vivo-beats strong,
+.vivo-beats p {
+  display: block;
+}
+
+.vivo-beats p {
+  margin-top: 4px;
+}
+
+.vivo-exam {
+  margin-top: 22px;
+}
+
+.vivo-context {
+  margin-top: 14px;
+  color: #3a3a3a;
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
+
+.vivo-exam h3 {
+  margin-top: 8px;
+  font-family: var(--vivo-display), sans-serif;
+  font-size: clamp(1.45rem, 5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.vivo-options {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.vivo-options button {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 52px;
+  padding: 10px;
+  border: 1px solid #111111;
+  font-size: 0.98rem;
+  line-height: 1.3;
+}
+
+.vivo-options button b {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  background: #111111;
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.vivo-options button.is-on {
+  background: #111111;
+  color: #ffffff;
+}
+
+.vivo-options button.is-on b {
+  background: #e02020;
+  color: #ffffff;
+}
+
+.vivo-map {
+  margin-top: 22px;
+}
+
+.vivo-scrub {
+  display: flex;
+  gap: 8px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.vivo-scrub::-webkit-scrollbar {
+  display: none;
+}
+
+.vivo-scrub button {
+  display: grid;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid #111111;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.vivo-scrub button.is-on {
+  background: #111111;
+  color: #ffffff;
+}
+
+.vivo-route {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #111111;
+  animation: vivo-rise 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vivo-route h3 {
+  margin-top: 8px;
+  font-family: var(--vivo-display), sans-serif;
+  font-size: clamp(1.7rem, 6vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.vivo-route > p {
+  margin-top: 10px;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.vivo-salary {
+  display: grid;
+  gap: 2px;
+  margin-top: 16px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.vivo-salary span,
+.vivo-schools {
+  color: #3a3a3a;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.vivo-price {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: clamp(4.6rem, 24vw, 8.5rem);
+  font-weight: 800;
+  letter-spacing: -0.07em;
+  line-height: 0.8;
+  max-width: 100%;
+}
+
+.vivo-price small {
+  padding-top: 0.55em;
+  font-size: 0.18em;
+  letter-spacing: 0.12em;
+}
+
+.vivo-price-rule {
+  display: block;
+  width: 72px;
+  height: 6px;
+  margin: 16px 0 8px;
+  background: #e02020;
+}
+
+.vivo-deliver {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vivo-deliver li {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding-block: 12px;
+  border-top: 1px solid #111111;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.vivo-deliver li:last-child {
+  border-bottom: 1px solid #111111;
+}
+
+.vivo-deliver span {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+
+.vivo-close .vivo-cta {
+  margin-top: 22px;
+}
+
+.vivo-faq {
+  margin-top: 28px;
+}
+
+.vivo-faq > div {
+  border-top: 1px solid #111111;
+}
+
+.vivo-faq > div:last-child {
+  border-bottom: 1px solid #111111;
+}
+
+.vivo-faq button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding-block: 12px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.vivo-faq p {
+  padding-bottom: 14px;
+  color: #3a3a3a;
+  line-height: 1.45;
+}
+
+.vivo-foot {
+  border-top: 1px solid #111111;
+  background: #ffffff;
+}
+
+.vivo-foot-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 20px calc(18px + env(safe-area-inset-bottom));
+}
+
+.vivo-foot-inner div {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.vivo-foot-inner strong {
+  font-family: var(--vivo-display), sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.vivo-foot-inner span {
+  color: #3a3a3a;
+  font-size: 0.82rem;
+}
+
+.vivo-sticky {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: #ffffff;
+  border-top: 1px solid #111111;
+  transform: translateY(110%);
+  pointer-events: none;
+}
+
+.vivo-sticky.is-on {
+  transform: translateY(0);
+  pointer-events: auto;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vivo-sticky a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  background: #e02020;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+@keyframes vivo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes vivo-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes vivo-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (min-width: 390px) {
+  .vivo-frame {
+    height: 280px;
+  }
+}
+
+@media (min-width: 960px) {
+  .vivo-bar-inner,
+  .vivo main,
+  .vivo-foot-inner {
+    padding-inline: 32px;
+  }
+
+  .vivo main {
+    padding-inline: 32px;
+  }
+
+  .vivo-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 36px;
+    align-items: end;
+    padding-block: 48px 64px;
+  }
+
+  .vivo-frame {
+    height: 520px;
+    margin-top: 0;
+  }
+
+  .vivo-cta {
+    width: fit-content;
+    min-width: 280px;
+    padding-inline: 28px;
+  }
+
+  .vivo-section {
+    padding-block: 72px;
+  }
+
+  .vivo-sticky {
+    display: none;
+  }
+
+  .vivo.is-sticky {
+    padding-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vivo-ticker b,
+  .vivo-ritual-copy p,
+  .vivo-route,
+  .vivo-step-fill,
+  .vivo-frame-label i,
+  .vivo-sticky.is-on {
+    animation: none;
+    transition: none;
+  }
+}

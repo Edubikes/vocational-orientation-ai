@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google"; // Corrected font variable names to match what typically works or is used
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Test de Orientación Vocacional IA | Resultados Oficiales",
-  description: "Descubre tu carrera ideal y en qué universidad estudiar con nuestro test vocacional basado en neurociencia e IA. Resultados precisos en 10 minutos.",
+  title: "Descifra Tu Futuro",
+  description:
+    "Sesenta preguntas y ocho rutas con universidades de México. El informe completo cuesta $199 MXN.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  colorScheme: "light",
 };
 
 export default function RootLayout({
@@ -23,9 +32,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es-MX" style={{ backgroundColor: "#ffffff", colorScheme: "light" }}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ backgroundColor: "#ffffff" }}
       >
         {children}
       </body>
