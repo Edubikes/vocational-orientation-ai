@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { PRICE_CENTS, PRICE_LABEL } from '@/lib/price';
 
 const stripe = process.env.STRIPE_SECRET_KEY
     ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2025-12-15.clover' })
@@ -22,10 +23,10 @@ export async function POST(request: Request) {
                     price_data: {
                         currency: 'mxn',
                         product_data: {
-                            name: 'Informe Vocacional Premium',
-                            description: 'Análisis completo de perfil cerebral y carreras compatibles.',
+                            name: 'Informe Descifra Tu Futuro',
+                            description: `Análisis vocacional completo. ${PRICE_LABEL} MXN.`,
                         },
-                        unit_amount: 2000, // $20.00 MXN in cents
+                        unit_amount: PRICE_CENTS, // $199.00 MXN
                     },
                     quantity: 1,
                 },
@@ -36,8 +37,9 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json({ sessionId: session.id, url: session.url });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const message = err instanceof Error ? err.message : 'No se pudo iniciar el pago';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
